@@ -30,12 +30,8 @@ RSS::~RSS() {
     delete mRSSReader;
 }
 
-void RSS::load(QUrl url, bool proxy) {
-    mRSSReader->load(url, proxy);
-}
-
-void RSS::load(QUrl url, QNetworkProxy proxy) {
-    mRSSReader->load(url, proxy);
+void RSS::load(QUrl url) {
+    mRSSReader->load(url);
 }
 
 void RSS::loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage) {

@@ -25,15 +25,13 @@
 #include <vntrssreader.h>
 #include <vntrsschannel.h>
 
-class RSS : public QObject
-{
+class RSS : public QObject {
     Q_OBJECT
 public:
     explicit RSS(QObject *parent = 0);
     ~RSS();
 
-    void load(QUrl url, bool proxy);
-    void load(QUrl url, QNetworkProxy proxy);
+    void load(QUrl url);
 
 public slots:
     void loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage);

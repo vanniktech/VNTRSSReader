@@ -30,23 +30,7 @@ VNTRSSReader::~VNTRSSReader() {
     delete mNetworkAccessManager;
 }
 
-void VNTRSSReader::load(QUrl url, bool systemProxy = false) {
-    mNetworkAccessManager->setProxy(QNetworkProxy());
-
-    if (systemProxy) {
-        QNetworkProxyQuery networkProxyQuery(url);
-        QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(networkProxyQuery);
-
-        foreach (QNetworkProxy proxy, listOfProxies) {
-            mNetworkAccessManager->setProxy(proxy);
-        }
-    }
-
-    mNetworkAccessManager->get(QNetworkRequest(url));
-}
-
-void VNTRSSReader::load(QUrl url, QNetworkProxy proxy) {
-    mNetworkAccessManager->setProxy(proxy);
+void VNTRSSReader::load(QUrl url) {
     mNetworkAccessManager->get(QNetworkRequest(url));
 }
 

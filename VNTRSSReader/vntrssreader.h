@@ -37,8 +37,7 @@ public:
     explicit VNTRSSReader(QObject *parent = 0);
     ~VNTRSSReader();
 
-    void load(QUrl url, bool systemProxy);
-    void load(QUrl url, QNetworkProxy proxy);
+    void load(QUrl url);
 
 private slots:
     void replyFinished(QNetworkReply* networkReply);

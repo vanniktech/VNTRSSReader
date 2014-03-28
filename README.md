@@ -18,35 +18,59 @@ There is also an example project in this Git repository, where you can take a lo
 
 **Class.h**
 ```
+#include <QObject>
+
 #include <vntrssreader.h>
 #include <vntrsschannel.h>
 
+class RSS : public QObject {
+    Q_OBJECT
 public slots:
     void loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage);
 
+public:
+    explicit Class(QObject *parent = 0);
+    ~Class();
+    void loadRSS(QUrl url);
+
 private:
     VNTRSSReader* mRSSReader;
+};
 ```
 
 **Class.cpp**
 ```
-Class::Class() {
-	mRSSReader = new VNTRSSReader();
-	QObject::connect(mRSSReader, SIGNAL(loadedRSS(VNTRSSChannel*, QString)), this, SLOT(loadedRSS(VNTRSSChannel*, QString)));	
+#include "class.h"
+
+#include <QDebug>
+
+Class::Class(QObject *parent) : QObject(parent) {
+    mRSSReader = new VNTRSSReader();
+	QObject::connect(mRSSReader, SIGNAL(loadedRSS(VNTRSSChannel*, QString)), this, SLOT(loadedRSS(VNTRSSChannel*, QString)));
+    
+    // Proxy configuration
+    // Use this if you don't want to use a proxy
+    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
+
+    // Use this if you do want to use a specific proxy
+    QNetworkProxy proxy;
+    proxy.setType(QNetworkProxy::Socks5Proxy);
+    proxy.setHostName("proxy.example.com");
+    proxy.setPort(1080);
+    proxy.setUser("username");
+    proxy.setPassword("password");
+    QNetworkProxy::setApplicationProxy(proxy);
+
+    // Use this if you want Qt to do the work and figure the proxy out
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 }
 
-void Class::loadRSS() {
-	// Now you can either load them via the system proxy or specify a proxy
-	QUrl url = QUrl("your_url_to_a_valid_rss_v2_service");
-	mRSSReader->load(url, true); // will use system proxy
+Class::~Class() {
+    delete mRSSReader;
+}
 
-	QNetworkProxy proxy;
-	proxy.setType(QNetworkProxy::Socks5Proxy);
-	proxy.setHostName("proxy.example.com");
-	proxy.setPort(1080);
-	proxy.setUser("username");
-	proxy.setPassword("password");
-	mRSSReader->load(url, proxy);
+void Class::loadRSS(QUrl url) {
+	mRSSReader->load(url;)
 }
 
 void Class::loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage) {

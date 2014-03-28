@@ -27,17 +27,24 @@ int main(int argc, char *argv[]) {
 
     QUrl url = QUrl("your_url_to_a_valid_rss_v2_service");
 
-    RSS* rss = new RSS();
-    rss->load(url, true);
+    // Proxy configuration
+    // Use this if you don't want to use a proxy
+    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
 
+    // Use this if you do want to use a specific proxy
     QNetworkProxy proxy;
     proxy.setType(QNetworkProxy::Socks5Proxy);
     proxy.setHostName("proxy.example.com");
     proxy.setPort(1080);
     proxy.setUser("username");
     proxy.setPassword("password");
+    QNetworkProxy::setApplicationProxy(proxy);
 
-    rss->load(url, proxy);
+    // Use this if you want Qt to do the work and figure the proxy out
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+
+    RSS* rss = new RSS();
+    rss->load(url);
 
     // we'll use this to stall our application, to get some results displayed on the console
     QTime dieTime= QTime::currentTime().addSecs(10);
@@ -45,5 +52,6 @@ int main(int argc, char *argv[]) {
     while (QTime::currentTime() < dieTime)
        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
+    // deletion of RSS object should be handled somewhere normally
     return 0;
 }
