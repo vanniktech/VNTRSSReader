@@ -54,7 +54,7 @@ Class::Class(QObject *parent) : QObject(parent) {
 
     // Use this if you do want to use a specific proxy
     QNetworkProxy proxy;
-    proxy.setType(QNetworkProxy::Socks5Proxy);
+    proxy.setType(QNetworkProxy::HttpProxy);
     proxy.setHostName("proxy.example.com");
     proxy.setPort(1080);
     proxy.setUser("username");
