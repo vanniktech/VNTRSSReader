@@ -38,7 +38,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     QXmlStreamReader xmlReader(networkReply->readAll());
     QString iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl;
     QString cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl;
-    QString name, rssVersion, errorMessage;
+    QString name, errorMessage;
     bool didBeginProcessingItems = false;
 
     QList<VNTRSSItem> items;
@@ -58,7 +58,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
                     errorMessage = QString("%1 %2").arg(networkReply->url().toString(), tr("is not a valid RSS feed"));
                     break;
                 } else {
-                    rssVersion = xmlReader.attributes().value("version").toString().simplified();
+                    QString rssVersion = xmlReader.attributes().value("version").toString().simplified();
 
                     if (rssVersion != "2.0") {
                         errorMessage = tr("Unsupported RSS version %1 in RSS feed %2").arg(rssVersion, networkReply->url().toString());
@@ -85,9 +85,18 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
 
             if (name == "item") didBeginProcessingItems = true;
         } else if (xmlReader.isEndElement()) {
-            VNTRSSItem item(iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl);
+            if (name == "item") {
+                VNTRSSItem item(iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl);
+                items.append(item);
 
-            if (name == "item" && !rssVersion.isNull()) items.append(item);
+                iLink.clear();
+                iTitle.clear();
+                iDescription.clear();
+                iPubDate.clear();
+                iCategory.clear();
+                iGuid.clear();
+                iImageUrl.clear();
+            }
         }
     }
 
