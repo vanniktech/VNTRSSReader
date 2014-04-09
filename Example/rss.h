@@ -34,7 +34,7 @@ public:
     void load(QUrl url);
 
 public slots:
-    void loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
 
 private:
     VNTRSSReader* mRSSReader;

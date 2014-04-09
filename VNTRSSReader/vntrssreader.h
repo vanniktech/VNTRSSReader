@@ -27,10 +27,9 @@
 #include <QUrl>
 #include <QList>
 
-#include <vntrsschannel.h>
+#include "vntrsschannel.h"
 
-class VNTRSSReader : public QObject
-{
+class VNTRSSReader : public QObject {
     Q_OBJECT
 
 public:
@@ -38,15 +37,28 @@ public:
     ~VNTRSSReader();
 
     void load(QUrl url);
+    void load(QUrl url, bool loadImages);
+    void load(QList<QUrl> urls);
+    void load(QList<QUrl> urls, bool loadImages);
 
 private slots:
     void replyFinished(QNetworkReply* networkReply);
+    void replyFinishedImages(QNetworkReply* networkReply);
 
 private:
+    void fireEmitIfDone();
+    void loadImage(VNTRSSCommon* common);
+
+    QMultiMap<QUrl, VNTRSSCommon*> mUrlItemMultiMap;
+    QList<VNTRSSChannel*> mRSSChannels;
+    QString mErrorMessage;
+    bool mLoadImages;
+
     QNetworkAccessManager* mNetworkAccessManager;
+    QNetworkAccessManager* mNetworkAccessManagerImages;
 
 signals:
-    void loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
 };
 
 #endif // VNTRSSREADER_H

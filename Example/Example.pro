@@ -25,8 +25,7 @@
 
 QT       += core
 QT       += network
-
-QT       -= gui
+QT       += gui
 
 OBJECTS_DIR = .obj
 MOC_DIR     = .moc

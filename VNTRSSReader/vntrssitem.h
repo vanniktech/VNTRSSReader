@@ -21,33 +21,21 @@
 #define VNTRSSITEM_H
 
 #include <QString>
-#include <QUrl>
 
-class VNTRSSItem
-{
+#include <vntrsscommon.h>
+
+class VNTRSSItem : public VNTRSSCommon {
 public:
     VNTRSSItem(QString link, QString title, QString description, QString pubDate, QString category, QString guid, QString imageUrl);
-    ~VNTRSSItem();
 
-    QString getTitle();
-    QString getDescription();
-    QString getPlainDescription();
-    QString getLink();
-    QString getGuid();
-    QString getCategory();
-    QString getPubDate();
-    QUrl getImageUrl();
+    QString getGuid() const;
+    QString getCategory() const;
 
-    QString toString();
+    QString toString() const;
 
 private:
-    QString mTitle;
-    QString mDescription;
-    QString mLink;
     QString mGuid;
     QString mCategory;
-    QString mPubDate;
-    QUrl    mImageUrl;
 };
 
 #endif // VNTRSSITEM_H

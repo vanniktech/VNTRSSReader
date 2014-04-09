@@ -6,11 +6,11 @@ If you have any ideas on how to improve the library or its code, simply write an
 
 ## Features
 - only RSS v2 is supported so far
-- nearly every attribute of the channel and entry object's are available through the library
+- nearly every attribute of the channel and entry / item object's are available through the library
+- option to automatically download the images and provide them for the library user
 
 ## Further plans
 - support more protocols like ATOM or RSS v0.91/v1
-- automatically download the images and provide them for the library user
 - parse pubDate into QDateTime
 
 ## Sample Code
@@ -26,11 +26,12 @@ There is also an example project in this Git repository, where you can take a lo
 class RSS : public QObject {
     Q_OBJECT
 public slots:
-    void loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
 
 public:
     explicit Class(QObject *parent = 0);
     ~Class();
+
     void loadRSS(QUrl url);
 
 private:
@@ -46,7 +47,7 @@ private:
 
 Class::Class(QObject *parent) : QObject(parent) {
     mRSSReader = new VNTRSSReader();
-	QObject::connect(mRSSReader, SIGNAL(loadedRSS(VNTRSSChannel*, QString)), this, SLOT(loadedRSS(VNTRSSChannel*, QString)));
+    QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>, QString)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>, QString)));
     
     // Proxy configuration
     // Use this if you don't want to use a proxy
@@ -70,22 +71,18 @@ Class::~Class() {
 }
 
 void Class::loadRSS(QUrl url) {
-	mRSSReader->load(url;)
+    mRSSReader->load(url); // will automatically download the images. pass false as a second argument if you don't want that
 }
 
-void Class::loadedRSS(VNTRSSChannel* rssChannel, QString errorMessage) {
-    if (!errorMessage.isEmpty()) {
-        qDebug() << errorMessage;
+void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage) {
+    foreach (VNTRSSChannel* rssChannel, rssChannels) {
+        if (errorMessage.isEmpty()) {
+            QList<VNTRSSItem*> items = rssChannel->getItems();
+            foreach (VNTRSSItem* item, items) qDebug() << item->toString();
+        } else qDebug() << errorMessage;
+
         delete rssChannel;
-        return;
     }
-
-    QList<VNTRSSItem> items = rssChannel->getItems();
-
-    foreach (VNTRSSItem item, items) {
-        qDebug() << item.toString();
-    }
-
-    delete rssChannel;
 }
+
 ```

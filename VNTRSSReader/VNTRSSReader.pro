@@ -24,8 +24,7 @@
 #-------------------------------------------------
 
 QT       += network
-
-QT       -= gui
+QT       += gui
 
 OBJECTS_DIR = .obj
 MOC_DIR     = .moc
@@ -38,12 +37,14 @@ DEFINES += VNTRSSREADER_LIBRARY
 
 SOURCES += vntrssreader.cpp \
     vntrssitem.cpp \
-    vntrsschannel.cpp
+    vntrsschannel.cpp\
+    vntrsscommon.cpp
 
 HEADERS += vntrssreader.h\
         vntrssreader_global.h \
     vntrssitem.h \
-    vntrsschannel.h
+    vntrsschannel.h\
+    vntrsscommon.h
 
 unix:!symbian {
     maemo5 {
