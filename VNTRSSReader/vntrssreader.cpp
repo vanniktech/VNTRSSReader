@@ -154,5 +154,6 @@ void VNTRSSReader::fireEmitIfDone() {
     if (mUrlItemMultiMap.size() == 0) {
         emit loadedRSS(mRSSChannels, mErrorMessage);
         mRSSChannels.clear();
+        mErrorMessage.clear();
     }
 }
