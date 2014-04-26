@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     rss->load(url);
 
     // we'll use this to stall our application, to get some results displayed on the console
-    QTime dieTime= QTime::currentTime().addSecs(10);
+    QTime dieTime = QTime::currentTime().addSecs(10);
 
     while (QTime::currentTime() < dieTime)
        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);

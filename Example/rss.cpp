@@ -23,7 +23,7 @@
 
 RSS::RSS(QObject *parent) : QObject(parent) {
     mRSSReader = new VNTRSSReader();
-    QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>, QString)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>, QString)));
+    QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>)));
 }
 
 RSS::~RSS() {
@@ -31,15 +31,19 @@ RSS::~RSS() {
 }
 
 void RSS::load(QUrl url) {
-    mRSSReader->load(url); // will automatically download the images. pass false as a second argument if you don't want that
+    mRSSReader->load(url);  // will automatically download the images. pass false as a second argument if you don't want that
 }
 
-void RSS::loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage) {
+void RSS::loadRSS(QList<QUrl> urls) {
+    mRSSReader->load(urls); // will automatically download the images. pass false as a second argument if you don't want that
+}
+
+void RSS::loadedRSS(QList<VNTRSSChannel*> rssChannels) {
     foreach (VNTRSSChannel* rssChannel, rssChannels) {
-        if (errorMessage.isEmpty()) {
+        if (!rssChannel->hasError()) {
             QList<VNTRSSItem*> items = rssChannel->getItems();
             foreach (VNTRSSItem* item, items) qDebug() << item->toString();
-        } else qDebug() << errorMessage;
+        } else qDebug() << rssChannel->getErrorMessage();
 
         delete rssChannel;
     }

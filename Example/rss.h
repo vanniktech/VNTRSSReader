@@ -32,9 +32,10 @@ public:
     ~RSS();
 
     void load(QUrl url);
+    void loadRSS(QList<QUrl> urls);
 
 public slots:
-    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels);
 
 private:
     VNTRSSReader* mRSSReader;

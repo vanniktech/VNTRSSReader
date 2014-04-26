@@ -26,13 +26,14 @@ There is also an example project in this Git repository, where you can take a lo
 class RSS : public QObject {
     Q_OBJECT
 public slots:
-    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels);
 
 public:
     explicit Class(QObject *parent = 0);
     ~Class();
 
     void loadRSS(QUrl url);
+    void loadRSS(QList<QUrl> urls);
 
 private:
     VNTRSSReader* mRSSReader;
@@ -47,7 +48,7 @@ private:
 
 Class::Class(QObject *parent) : QObject(parent) {
     mRSSReader = new VNTRSSReader();
-    QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>, QString)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>, QString)));
+    QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>)));
     
     // Proxy configuration
     // Use this if you don't want to use a proxy
@@ -71,15 +72,19 @@ Class::~Class() {
 }
 
 void Class::loadRSS(QUrl url) {
-    mRSSReader->load(url); // will automatically download the images. pass false as a second argument if you don't want that
+    mRSSReader->load(url);  // will automatically download the images. pass false as a second argument if you don't want that
 }
 
-void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage) {
+void Class::loadRSS(QList<QUrl> urls) {
+    mRSSReader->load(urls); // will automatically download the images. pass false as a second argument if you don't want that
+}
+
+void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels) {
     foreach (VNTRSSChannel* rssChannel, rssChannels) {
-        if (errorMessage.isEmpty()) {
+        if (!rssChannel->hasError()) {
             QList<VNTRSSItem*> items = rssChannel->getItems();
             foreach (VNTRSSItem* item, items) qDebug() << item->toString();
-        } else qDebug() << errorMessage;
+        } else qDebug() << rssChannel->getErrorMessage();
 
         delete rssChannel;
     }

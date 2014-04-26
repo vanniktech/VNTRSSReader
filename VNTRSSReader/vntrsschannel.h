@@ -29,12 +29,14 @@
 
 class VNTRSSChannel : public VNTRSSCommon {
 public:
-    VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QList<VNTRSSItem*> items);
+    VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QString errorMessage, QList<VNTRSSItem*> items);
     ~VNTRSSChannel();
 
     QString getLanguage() const;
     QString getCopyright() const;
     QUrl    getRSSUrl() const;
+    QString getErrorMessage() const;
+    bool    hasError() const;
 
     QList<VNTRSSItem *> getItems() const;
 
@@ -44,6 +46,7 @@ private:
     QString mLanguage;
     QString mCopyright;
     QUrl    mRSSUrl;
+    QString mErrorMessage;
     QList<VNTRSSItem*> mItems;
 };
 

@@ -19,10 +19,11 @@
 
 #include "vntrsschannel.h"
 
-VNTRSSChannel::VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QList<VNTRSSItem*> items) : VNTRSSCommon(title, description, pubdate, link, imageUrl) {
+VNTRSSChannel::VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QString errorMessage, QList<VNTRSSItem*> items) : VNTRSSCommon(title, description, pubdate, link, imageUrl) {
     mLanguage = language.simplified();
     mCopyright = copyright.simplified();
     mRSSUrl = rssUrl;
+    mErrorMessage = errorMessage;
     mItems = items;
 }
 
@@ -42,10 +43,18 @@ QUrl    VNTRSSChannel::getRSSUrl() const {
     return mRSSUrl;
 }
 
+QString VNTRSSChannel::getErrorMessage() const {
+    return mErrorMessage;
+}
+
+bool    VNTRSSChannel::hasError() const {
+    return !mErrorMessage.isEmpty();
+}
+
 QList<VNTRSSItem*> VNTRSSChannel::getItems() const {
     return mItems;
 }
 
 QString VNTRSSChannel::toString() const {
-    return VNTRSSCommon::toString().append(QString("language=%1\ncopyright=%2\nrssurl=%3").arg(mLanguage, mCopyright, mRSSUrl.toString()));
+    return VNTRSSCommon::toString().append(QString("language=%1\ncopyright=%2\nrssurl=%3\nerrormessage=%4").arg(mLanguage, mCopyright, mRSSUrl.toString(), mErrorMessage));
 }

@@ -57,7 +57,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     QXmlStreamReader xmlReader(networkReply->readAll());
     QString iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl;
     QString cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl;
-    QString name;
+    QString name, errorMessage;
     bool didBeginProcessingItems = false;
 
     QList<VNTRSSItem*> items;
@@ -65,7 +65,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         xmlReader.readNext();
 
         if (xmlReader.columnNumber() == 0 && xmlReader.hasError()) {
-            mErrorMessage = tr("Could not retrieve a valid XML response from %1").arg(networkReply->url().toString());
+            errorMessage = tr("Could not retrieve a valid XML response from %1").arg(networkReply->url().toString());
             break;
         }
 
@@ -74,13 +74,13 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         if (xmlReader.isStartElement()) {
             if (i++ == 0) { // Root Element
                 if (name != "rss") {
-                    mErrorMessage = QString("%1 %2").arg(networkReply->url().toString(), tr("is not a valid RSS feed"));
+                    errorMessage = QString("%1 %2").arg(networkReply->url().toString(), tr("is not a valid RSS feed"));
                     break;
                 } else {
                     QString rssVersion = xmlReader.attributes().value("version").toString().simplified();
 
                     if (rssVersion != "2.0") {
-                        mErrorMessage = tr("Unsupported RSS version %1 in RSS feed %2").arg(rssVersion, networkReply->url().toString());
+                        errorMessage = tr("Unsupported RSS version %1 in RSS feed %2").arg(rssVersion, networkReply->url().toString());
                         break;
                     }
                 }
@@ -121,7 +121,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         }
     }
 
-    VNTRSSChannel* rssChannel = new VNTRSSChannel(cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl, networkReply->url(), items);
+    VNTRSSChannel* rssChannel = new VNTRSSChannel(cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl, networkReply->url(), errorMessage, items);
     mRSSChannels.append(rssChannel);
     this->loadImage(rssChannel);
 
@@ -152,8 +152,7 @@ void VNTRSSReader::loadImage(VNTRSSCommon* common) {
 
 void VNTRSSReader::fireEmitIfDone() {
     if (mUrlItemMultiMap.size() == 0) {
-        emit loadedRSS(mRSSChannels, mErrorMessage);
+        emit loadedRSS(mRSSChannels);
         mRSSChannels.clear();
-        mErrorMessage.clear();
     }
 }

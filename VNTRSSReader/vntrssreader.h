@@ -51,14 +51,13 @@ private:
 
     QMultiMap<QUrl, VNTRSSCommon*> mUrlItemMultiMap;
     QList<VNTRSSChannel*> mRSSChannels;
-    QString mErrorMessage;
     bool mLoadImages;
 
     QNetworkAccessManager* mNetworkAccessManager;
     QNetworkAccessManager* mNetworkAccessManagerImages;
 
 signals:
-    void loadedRSS(QList<VNTRSSChannel*> rssChannels, QString errorMessage);
+    void loadedRSS(QList<VNTRSSChannel*> rssChannels);
 };
 
 #endif // VNTRSSREADER_H
