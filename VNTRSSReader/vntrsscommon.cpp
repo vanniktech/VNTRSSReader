@@ -18,6 +18,7 @@
 */
 
 #include <QRegExp>
+#include <QStringList>
 
 #include "vntrsscommon.h"
 
@@ -27,6 +28,7 @@ VNTRSSCommon::VNTRSSCommon(QString title, QString description, QString pubDate, 
     mPubDate = pubDate.simplified();
     mLink = link;
     mImageUrl = imageUrl;
+    this->updateImageFileType();
 }
 
 QString VNTRSSCommon::getTitle() const {
@@ -53,6 +55,10 @@ QUrl VNTRSSCommon::getImageUrl() const {
     return mImageUrl;
 }
 
+QString VNTRSSCommon::getImageFileType() const {
+    return mImageFileType;
+}
+
 QImage VNTRSSCommon::getImage() const {
     return mImage;
 }
@@ -63,4 +69,8 @@ void VNTRSSCommon::setImage(const QImage &value) {
 
 QString VNTRSSCommon::toString() const {
     return QString("link=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate, mImageUrl.toString());
+}
+
+void VNTRSSCommon::updateImageFileType() {
+    mImageFileType = mImageUrl.toString().split(".").last();
 }

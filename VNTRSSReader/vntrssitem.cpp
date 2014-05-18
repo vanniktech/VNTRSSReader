@@ -32,6 +32,7 @@ VNTRSSItem::VNTRSSItem(QString link, QString title, QString description, QString
     }
 
     mImageUrl = QUrl(imageUrl);
+    this->updateImageFileType();
 }
 
 QString VNTRSSItem::getGuid() const {

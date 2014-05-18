@@ -34,6 +34,7 @@ public:
     QString getPubDate() const;
     QUrl getLink() const;
     QUrl getImageUrl() const;
+    QString getImageFileType() const;
     QImage getImage() const;
     void setImage(const QImage &value);
 
@@ -45,7 +46,10 @@ protected:
     QString mPubDate;
     QUrl    mLink;
     QUrl    mImageUrl;
+    QString mImageFileType;
     QImage  mImage;
+
+    void updateImageFileType();
 };
 
 #endif // VNTRSSCOMMON_H
