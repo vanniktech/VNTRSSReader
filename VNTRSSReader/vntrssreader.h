@@ -52,6 +52,7 @@ private:
     QMultiMap<QUrl, VNTRSSCommon*> mUrlItemMultiMap;
     QList<VNTRSSChannel*> mRSSChannels;
     bool mLoadImages;
+    int mMissingChannels;
 
     QNetworkAccessManager* mNetworkAccessManager;
     QNetworkAccessManager* mNetworkAccessManagerImages;

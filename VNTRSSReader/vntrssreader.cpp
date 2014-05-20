@@ -41,6 +41,7 @@ void VNTRSSReader::load(QUrl url) {
 
 void VNTRSSReader::load(QUrl url, bool loadImages) {
     mLoadImages = loadImages;
+    mMissingChannels = 1;
     mNetworkAccessManager->get(QNetworkRequest(url));
 }
 
@@ -50,6 +51,7 @@ void VNTRSSReader::load(QList<QUrl> urls) {
 
 void VNTRSSReader::load(QList<QUrl> urls, bool loadImages) {
     mLoadImages = loadImages;
+    mMissingChannels = urls.size();
     foreach (QUrl url, urls) mNetworkAccessManager->get(QNetworkRequest(url));
 }
 
@@ -59,6 +61,8 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     QString cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl;
     QString name, errorMessage;
     bool didBeginProcessingItems = false;
+
+    mMissingChannels -= 1;
 
     QList<VNTRSSItem*> items;
     for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError();) {
@@ -151,7 +155,7 @@ void VNTRSSReader::loadImage(VNTRSSCommon* common) {
 }
 
 void VNTRSSReader::fireEmitIfDone() {
-    if (mUrlItemMultiMap.size() == 0) {
+    if (mUrlItemMultiMap.size() == 0 && mMissingChannels == 0) {
         emit loadedRSS(mRSSChannels);
         mRSSChannels.clear();
     }
