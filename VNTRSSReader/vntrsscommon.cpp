@@ -25,7 +25,29 @@
 VNTRSSCommon::VNTRSSCommon(QString title, QString description, QString pubDate, QUrl link, QUrl imageUrl) {
     mTitle = title.simplified();
     mDescription = description.simplified();
-    mPubDate = pubDate.simplified();
+
+    QString pubDateFormatted = pubDate.simplified();
+    pubDateFormatted = pubDateFormatted.mid(5); // replace weekday (e.g.:Thu, )
+
+    if (pubDateFormatted.length() == 26) pubDateFormatted = pubDateFormatted.remove(pubDateFormatted.length() - 6, 6); // replace timezone (e.g.: +0200)
+    else if (pubDateFormatted.length() == 24) pubDateFormatted = pubDateFormatted.remove(pubDateFormatted.length() - 4, 4); // replace timezone (e.g.: GMT)
+
+    // need to do this, because month have different abbreviations on different operating systems with different languages
+    pubDateFormatted = pubDateFormatted.replace("Jan", "01");
+    pubDateFormatted = pubDateFormatted.replace("Feb", "02");
+    pubDateFormatted = pubDateFormatted.replace("Mar", "03");
+    pubDateFormatted = pubDateFormatted.replace("Apr", "04");
+    pubDateFormatted = pubDateFormatted.replace("May", "05");
+    pubDateFormatted = pubDateFormatted.replace("Jun", "06");
+    pubDateFormatted = pubDateFormatted.replace("Jul", "07");
+    pubDateFormatted = pubDateFormatted.replace("Aug", "08");
+    pubDateFormatted = pubDateFormatted.replace("Sep", "09");
+    pubDateFormatted = pubDateFormatted.replace("Oct", "10");
+    pubDateFormatted = pubDateFormatted.replace("Nov", "11");
+    pubDateFormatted = pubDateFormatted.replace("Dez", "12");
+
+    mPubDate = QDateTime::fromString(pubDateFormatted, "dd MM yyyy HH:mm:ss");
+
     mLink = link;
     mImageUrl = imageUrl;
     this->updateImageFileType();
@@ -43,7 +65,7 @@ QString VNTRSSCommon::getPlainDescription() {
     return mDescription.remove(QRegExp("<[^>]*>")).simplified();
 }
 
-QString VNTRSSCommon::getPubDate() const {
+QDateTime VNTRSSCommon::getPubDate() const {
     return mPubDate;
 }
 
@@ -68,7 +90,7 @@ void VNTRSSCommon::setImage(const QImage &value) {
 }
 
 QString VNTRSSCommon::toString() const {
-    return QString("link=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate, mImageUrl.toString());
+    return QString("link=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate.toString(), mImageUrl.toString());
 }
 
 void VNTRSSCommon::updateImageFileType() {

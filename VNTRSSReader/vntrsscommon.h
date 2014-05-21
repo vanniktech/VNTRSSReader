@@ -23,6 +23,7 @@
 #include <QString>
 #include <QImage>
 #include <QUrl>
+#include <QDateTime>
 
 class VNTRSSCommon {
 public:
@@ -31,7 +32,7 @@ public:
     QString getTitle() const;
     QString getDescription() const;
     QString getPlainDescription();
-    QString getPubDate() const;
+    QDateTime getPubDate() const;
     QUrl getLink() const;
     QUrl getImageUrl() const;
     QString getImageFileType() const;
@@ -43,7 +44,7 @@ public:
 protected:
     QString mTitle;
     QString mDescription;
-    QString mPubDate;
+    QDateTime mPubDate;
     QUrl    mLink;
     QUrl    mImageUrl;
     QString mImageFileType;

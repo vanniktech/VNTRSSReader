@@ -7,11 +7,11 @@ If you have any ideas on how to improve the library or its code, simply write an
 ## Features
 - only RSS v2 is supported so far
 - nearly every attribute of the channel and entry / item object's are available through the library
+- pubDate will be parsed conveniently into QDateTime
 - option to automatically download the images and provide them for the library user
 
 ## Further plans
 - support more protocols like ATOM or RSS v0.91/v1
-- parse pubDate into QDateTime
 
 ## Sample Code
 There is also an example project in this Git repository, where you can take a look at the library itself. Please read the INSTALL document if you want to execute / test the Example project.
