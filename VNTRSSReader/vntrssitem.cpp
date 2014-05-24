@@ -44,5 +44,5 @@ QString VNTRSSItem::getCategory() const {
 }
 
 QString VNTRSSItem::toString() const {
-    return VNTRSSCommon::toString().append(QString("category=%1\nguid=%2").arg(mCategory, mGuid));
+    return VNTRSSCommon::toString().append(QString("\ncategory=%1\nguid=%2").arg(mCategory, mGuid));
 }

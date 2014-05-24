@@ -90,7 +90,7 @@ void VNTRSSCommon::setImage(const QImage &value) {
 }
 
 QString VNTRSSCommon::toString() const {
-    return QString("link=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate.toString(), mImageUrl.toString());
+    return QString("\nlink=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate.toString(), mImageUrl.toString());
 }
 
 void VNTRSSCommon::updateImageFileType() {
