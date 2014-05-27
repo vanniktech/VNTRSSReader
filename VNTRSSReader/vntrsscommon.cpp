@@ -27,24 +27,10 @@ VNTRSSCommon::VNTRSSCommon(QString title, QString description, QString pubDate, 
     mDescription = description.simplified();
 
     QString pubDateFormatted = pubDate.simplified();
-    pubDateFormatted = pubDateFormatted.mid(5); // replace weekday (e.g.:Thu, )
-
-    if (pubDateFormatted.length() == 26) pubDateFormatted = pubDateFormatted.remove(pubDateFormatted.length() - 6, 6); // replace timezone (e.g.: +0200)
-    else if (pubDateFormatted.length() == 24) pubDateFormatted = pubDateFormatted.remove(pubDateFormatted.length() - 4, 4); // replace timezone (e.g.: GMT)
+    pubDateFormatted = pubDateFormatted.mid(5).mid(0, 20); // replace weekday (e.g.:Thu, ) and timezone (e.g.: +0200, GMT), which is at the end of the string
 
     // need to do this, because month have different abbreviations on different operating systems with different languages
-    pubDateFormatted = pubDateFormatted.replace("Jan", "01");
-    pubDateFormatted = pubDateFormatted.replace("Feb", "02");
-    pubDateFormatted = pubDateFormatted.replace("Mar", "03");
-    pubDateFormatted = pubDateFormatted.replace("Apr", "04");
-    pubDateFormatted = pubDateFormatted.replace("May", "05");
-    pubDateFormatted = pubDateFormatted.replace("Jun", "06");
-    pubDateFormatted = pubDateFormatted.replace("Jul", "07");
-    pubDateFormatted = pubDateFormatted.replace("Aug", "08");
-    pubDateFormatted = pubDateFormatted.replace("Sep", "09");
-    pubDateFormatted = pubDateFormatted.replace("Oct", "10");
-    pubDateFormatted = pubDateFormatted.replace("Nov", "11");
-    pubDateFormatted = pubDateFormatted.replace("Dez", "12");
+    pubDateFormatted = pubDateFormatted.replace("Jan", "01"); pubDateFormatted = pubDateFormatted.replace("Feb", "02"); pubDateFormatted = pubDateFormatted.replace("Mar", "03"); pubDateFormatted = pubDateFormatted.replace("Apr", "04"); pubDateFormatted = pubDateFormatted.replace("May", "05"); pubDateFormatted = pubDateFormatted.replace("Jun", "06"); pubDateFormatted = pubDateFormatted.replace("Jul", "07"); pubDateFormatted = pubDateFormatted.replace("Aug", "08"); pubDateFormatted = pubDateFormatted.replace("Sep", "09"); pubDateFormatted = pubDateFormatted.replace("Oct", "10"); pubDateFormatted = pubDateFormatted.replace("Nov", "11"); pubDateFormatted = pubDateFormatted.replace("Dez", "12");
 
     mPubDate = QDateTime::fromString(pubDateFormatted, "dd MM yyyy HH:mm:ss");
 
@@ -90,7 +76,7 @@ void VNTRSSCommon::setImage(const QImage &value) {
 }
 
 QString VNTRSSCommon::toString() const {
-    return QString("\nlink=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate.toString(), mImageUrl.toString());
+    return QString("link=%1\ntitle=%2\ndescription=%3\npubDate=%4\nimageUrl=%5").arg(mLink.toString(), mTitle, mDescription, mPubDate.toString(), mImageUrl.toString());
 }
 
 void VNTRSSCommon::updateImageFileType() {

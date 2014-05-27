@@ -28,7 +28,7 @@ VNTRSSChannel::VNTRSSChannel(QString link, QString title, QString description, Q
 }
 
 VNTRSSChannel::~VNTRSSChannel() {
-    foreach (VNTRSSItem* item, mItems) delete item;
+    qDeleteAll(mItems.begin(), mItems.end());
 }
 
 QString VNTRSSChannel::getLanguage() const {
@@ -56,5 +56,5 @@ QList<VNTRSSItem*> VNTRSSChannel::getItems() const {
 }
 
 QString VNTRSSChannel::toString() const {
-    return VNTRSSCommon::toString().append(QString("language=%1\ncopyright=%2\nrssurl=%3\nerrormessage=%4").arg(mLanguage, mCopyright, mRSSUrl.toString(), mErrorMessage));
+    return VNTRSSCommon::toString().append(QString("\nlanguage=%1\ncopyright=%2\nrssurl=%3\nerrormessage=%4").arg(mLanguage, mCopyright, mRSSUrl.toString(), mErrorMessage));
 }
