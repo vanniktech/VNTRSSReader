@@ -26,9 +26,9 @@ VNTRSSItem::VNTRSSItem(QString link, QString title, QString description, QString
     mGuid = guid.simplified();
 
     if (imageUrl.isNull()) {
-        QRegExp imageRegex("src=\"(http://|https://)(www)?[a-zA-Z0-9\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+\"");
+        QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+\"?");
 
-        if (imageRegex.indexIn(mDescription) != -1) imageUrl = imageRegex.cap().remove("src=\"").remove('"');
+        if (imageRegex.indexIn(mDescription) != -1) imageUrl = imageRegex.cap().remove("src=").remove('"');
     }
 
     mImageUrl = QUrl(imageUrl);
