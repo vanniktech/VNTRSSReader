@@ -20,21 +20,34 @@
 #ifndef VNTRSSCOMMON_H
 #define VNTRSSCOMMON_H
 
+#include <QObject>
 #include <QString>
 #include <QImage>
 #include <QUrl>
 #include <QDateTime>
 
-class VNTRSSCommon {
-public:
-    VNTRSSCommon(QString title, QString description, QString pubDate, QUrl link, QUrl imageUrl);
+class VNTRSSCommon : public QObject {
+    Q_OBJECT
 
-    QString getTitle() const;
+public:
+    VNTRSSCommon();
+
+    Q_INVOKABLE void setTitle(QString title);
+    QString getTitle();
+
+    Q_INVOKABLE void setDescription(QString description);
     QString getDescription() const;
     QString getPlainDescription();
+
+    Q_INVOKABLE void setPubDate(QString pubDate);
     QDateTime getPubDate() const;
+
+    Q_INVOKABLE void setLink(QString link);
     QUrl getLink() const;
+
+    Q_INVOKABLE void setImageUrl(QString imageUrl);
     QUrl getImageUrl() const;
+
     QString getImageFileType() const;
     QImage getImage() const;
     void setImage(const QImage &value);

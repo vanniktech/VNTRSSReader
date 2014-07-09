@@ -22,13 +22,20 @@
 
 #include <QString>
 
-#include <vntrsscommon.h>
+#include "vntrsscommon.h"
 
 class VNTRSSItem : public VNTRSSCommon {
-public:
-    VNTRSSItem(QString link, QString title, QString description, QString pubDate, QString category, QString guid, QString imageUrl);
+    Q_OBJECT
 
+public:
+    VNTRSSItem();
+
+    Q_INVOKABLE void setDescription(QString description);
+
+    Q_INVOKABLE void setGuid(QString guid);
     QString getGuid() const;
+
+    Q_INVOKABLE void setCategory(QString category);
     QString getCategory() const;
 
     QString toString() const;

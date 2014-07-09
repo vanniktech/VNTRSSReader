@@ -21,22 +21,30 @@
 
 #include "vntrssitem.h"
 
-VNTRSSItem::VNTRSSItem(QString link, QString title, QString description, QString pubDate, QString category, QString guid, QString imageUrl) : VNTRSSCommon(title, description, pubDate, link, QUrl()){
-    mCategory = category.simplified();
-    mGuid = guid.simplified();
+VNTRSSItem::VNTRSSItem() : VNTRSSCommon() {
 
-    if (imageUrl.isNull()) {
-        QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+\"?");
+}
 
-        if (imageRegex.indexIn(mDescription) != -1) imageUrl = imageRegex.cap().remove("src=").remove('"');
+void VNTRSSItem::setDescription(QString description) {
+    VNTRSSCommon::setDescription(description);
+
+    if (mImageUrl.isEmpty()) {
+        QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9~\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+(\\.jpg|\\.JPG|\\.png|\\.PNG|\\.gif|\\.GIF)\"?");
+
+        if (imageRegex.indexIn(description) != -1) this->setImageUrl(imageRegex.cap().remove("src=").remove('"'));
     }
+}
 
-    mImageUrl = QUrl(imageUrl);
-    this->updateImageFileType();
+void VNTRSSItem::setGuid(QString guid) {
+    mGuid = guid.simplified();
 }
 
 QString VNTRSSItem::getGuid() const {
     return mGuid;
+}
+
+void VNTRSSItem::setCategory(QString category) {
+    mCategory = category.simplified();
 }
 
 QString VNTRSSItem::getCategory() const {

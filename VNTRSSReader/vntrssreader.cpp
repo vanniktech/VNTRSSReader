@@ -57,75 +57,89 @@ void VNTRSSReader::load(QList<QUrl> urls, bool loadImages) {
 
 void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     QXmlStreamReader xmlReader(networkReply->readAll());
-    QString iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl;
-    QString cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl;
-    QString name, errorMessage;
-    bool didBeginProcessingItems = false;
+    QString name;
 
     mMissingChannels -= 1;
 
-    QList<VNTRSSItem*> items;
+    VNTRSSChannel* rssChannel = NULL;
+    VNTRSSItem* rssItem = NULL;
+
+    QString functionName, prefix;
+    QHash<QString, QString> functionValueHash;
+    bool rss, atom;
+
     for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError();) {
         xmlReader.readNext();
-
-        if (xmlReader.columnNumber() == 0 && xmlReader.hasError()) {
-            errorMessage = tr("Could not retrieve a valid XML response from %1").arg(networkReply->url().toString());
-            break;
-        }
-
         name = xmlReader.name().toString();
+
+        if (xmlReader.isStartDocument()) {
+            rssChannel = new VNTRSSChannel();
+
+            if (xmlReader.hasError()) {
+                rssChannel->setErrorMessage(tr("Could not retrieve a valid XML response from %1").arg(networkReply->url().toString()));
+                break;
+            }
+        }
 
         if (xmlReader.isStartElement()) {
             if (i++ == 0) { // Root Element
-                if (name != "rss") {
-                    errorMessage = QString("%1 %2").arg(networkReply->url().toString(), tr("is not a valid RSS feed"));
-                    break;
-                } else {
-                    QString rssVersion = xmlReader.attributes().value("version").toString().simplified();
+                rss = name == "rss";
+                atom = name == "feed";
 
-                    if (rssVersion != "2.0") {
-                        errorMessage = tr("Unsupported RSS version %1 in RSS feed %2").arg(rssVersion, networkReply->url().toString());
-                        break;
-                    }
+                if (!(rss || atom)) {
+                    rssChannel->setErrorMessage(QString("%1 %2").arg(networkReply->url().toString(), tr("is not a valid RSS feed")));
+                    break;
                 }
             }
 
-            // Common
-            if (name == "link" && didBeginProcessingItems) iLink = xmlReader.readElementText(); else if (name == "link" && cLink.isNull()) cLink = xmlReader.readElementText();
-            if (name == "title" && didBeginProcessingItems) iTitle = xmlReader.readElementText(); else if (name == "title" && cTitle.isNull()) cTitle = xmlReader.readElementText();
-            if (name == "description" && didBeginProcessingItems) iDescription = xmlReader.readElementText(); else if (name == "description" && cDescription.isNull()) cDescription = xmlReader.readElementText();
-            if (name == "pubDate" && didBeginProcessingItems) iPubDate = xmlReader.readElementText(); else if (name == "pubDate" && cPubDate.isNull()) cPubDate = xmlReader.readElementText();
+            if ((name == "item" || name == "entry") && rssChannel != NULL) {
+                rssItem = new VNTRSSItem();
+                rssChannel->addItem(rssItem);
+            }
 
-            // Item only
-            if (name == "category" && didBeginProcessingItems) iCategory = xmlReader.readElementText();
-            if (name == "guid" && didBeginProcessingItems) iGuid = xmlReader.readElementText();
-            if (name == "content" && didBeginProcessingItems) iImageUrl = xmlReader.attributes().value("url").toString();
+            prefix = xmlReader.prefix().toString();
 
-            // Channel only
-            if (name == "language" && cLanguage.isNull()) cLanguage = xmlReader.readElementText();
-            if (name == "copyright" && cCopyright.isNull()) cCopyright = xmlReader.readElementText();
-            if (name == "url" && cImageUrl.isNull()) cImageUrl = xmlReader.readElementText();
+            if (prefix == "dc" || (prefix == "media" && name == "title")) continue;
+            if (atom && name == "summary") name = "description";
+            if (atom && name == "published") name = "pubDate";
+            if (atom && name == "id") name = "guid";
+            if (prefix == "media" && name == "thumbnail") name = "imageUrl";
 
-            if (name == "item") didBeginProcessingItems = true;
+            functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
+            const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
+
+            if (rssChannel->metaObject()->indexOfMethod(functionNameWithParameter) != -1 || (rssItem != NULL && rssItem->metaObject()->indexOfMethod(functionNameWithParameter) != -1)) {
+                QString value;
+
+                if (name == "link" && atom) value = xmlReader.attributes().value("href").toString();
+                else if (prefix == "media" && name == "imageUrl") value = xmlReader.attributes().value("url").toString();
+                else value = xmlReader.readElementText();
+
+                functionValueHash.insert(functionName, value);
+            }
         } else if (xmlReader.isEndElement()) {
-            if (name == "item") {
-                VNTRSSItem* item = new VNTRSSItem(iLink, iTitle, iDescription, iPubDate, iCategory, iGuid, iImageUrl);
-                items.append(item);
+            if (rssChannel != NULL && rssItem == NULL) {
+                QHashIterator<QString, QString> it(functionValueHash);
+                while (it.hasNext()) {
+                    it.next();
+                    QMetaObject::invokeMethod(rssChannel, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
+                }
 
-                this->loadImage(item);
+                functionValueHash.clear();
+            } else if (rssItem != NULL) {
+                QHashIterator<QString, QString> it(functionValueHash);
+                while (it.hasNext()) {
+                    it.next();
+                    QMetaObject::invokeMethod(rssItem, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
+                }
 
-                iLink.clear();
-                iTitle.clear();
-                iDescription.clear();
-                iPubDate.clear();
-                iCategory.clear();
-                iGuid.clear();
-                iImageUrl.clear();
+                functionValueHash.clear();
             }
         }
     }
 
-    VNTRSSChannel* rssChannel = new VNTRSSChannel(cLink, cTitle, cDescription, cPubDate, cLanguage, cCopyright, cImageUrl, networkReply->url(), errorMessage, items);
+    rssChannel->setRSSUrl(networkReply->url());
+    foreach (VNTRSSItem* item, rssChannel->getItems()) this->loadImage(item);
     mRSSChannels.append(rssChannel);
     this->loadImage(rssChannel);
 

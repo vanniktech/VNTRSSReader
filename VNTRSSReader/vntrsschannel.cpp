@@ -19,36 +19,52 @@
 
 #include "vntrsschannel.h"
 
-VNTRSSChannel::VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QString errorMessage, QList<VNTRSSItem*> items) : VNTRSSCommon(title, description, pubdate, link, imageUrl) {
-    mLanguage = language.simplified();
-    mCopyright = copyright.simplified();
-    mRSSUrl = rssUrl;
-    mErrorMessage = errorMessage;
-    mItems = items;
+VNTRSSChannel::VNTRSSChannel() : VNTRSSCommon() {
+
 }
 
 VNTRSSChannel::~VNTRSSChannel() {
     qDeleteAll(mItems.begin(), mItems.end());
 }
 
+void VNTRSSChannel::setLanguage(QString language) {
+    mLanguage = language.simplified();
+ }
+
 QString VNTRSSChannel::getLanguage() const {
     return mLanguage;
+}
+
+void VNTRSSChannel::setCopyright(QString copyright) {
+    mCopyright = copyright.simplified();
 }
 
 QString VNTRSSChannel::getCopyright() const {
     return mCopyright;
 }
 
-QUrl    VNTRSSChannel::getRSSUrl() const {
+void VNTRSSChannel::setRSSUrl(QUrl rssUrl) {
+    mRSSUrl = rssUrl;
+}
+
+QUrl VNTRSSChannel::getRSSUrl() const {
     return mRSSUrl;
+}
+
+void VNTRSSChannel::setErrorMessage(QString errorMessage) {
+    mErrorMessage = errorMessage;
 }
 
 QString VNTRSSChannel::getErrorMessage() const {
     return mErrorMessage;
 }
 
-bool    VNTRSSChannel::hasError() const {
+bool VNTRSSChannel::hasError() const {
     return !mErrorMessage.isEmpty();
+}
+
+void VNTRSSChannel::addItem(VNTRSSItem* item) {
+    mItems.append(item);
 }
 
 QList<VNTRSSItem*> VNTRSSChannel::getItems() const {

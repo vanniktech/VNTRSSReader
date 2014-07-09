@@ -28,16 +28,26 @@
 #include "vntrsscommon.h"
 
 class VNTRSSChannel : public VNTRSSCommon {
+    Q_OBJECT
+
 public:
-    VNTRSSChannel(QString link, QString title, QString description, QString pubdate, QString language, QString copyright, QString imageUrl, QUrl rssUrl, QString errorMessage, QList<VNTRSSItem*> items);
+    VNTRSSChannel();
     ~VNTRSSChannel();
 
+    Q_INVOKABLE void setLanguage(QString language);
     QString getLanguage() const;
-    QString getCopyright() const;
-    QUrl    getRSSUrl() const;
-    QString getErrorMessage() const;
-    bool    hasError() const;
 
+    Q_INVOKABLE void setCopyright(QString copyright);
+    QString getCopyright() const;
+
+    void setRSSUrl(QUrl rssUrl);
+    QUrl getRSSUrl() const;
+
+    void setErrorMessage(QString errorMessage);
+    QString getErrorMessage() const;
+    bool hasError() const;
+
+    void addItem(VNTRSSItem* item);
     QList<VNTRSSItem *> getItems() const;
 
     QString toString() const;
