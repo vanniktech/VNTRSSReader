@@ -29,7 +29,7 @@ void VNTRSSItem::setDescription(QString description) {
     VNTRSSCommon::setDescription(description);
 
     if (mImageUrl.isEmpty()) {
-        QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9~\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+(\\.jpg|\\.JPG|\\.png|\\.PNG|\\.gif|\\.GIF)\"?");
+        QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9~\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+(\\.jpg|\\.JPG|\\.png|\\.PNG|\\.jpeg|\\.JPEG)\"?");
 
         if (imageRegex.indexIn(description) != -1) this->setImageUrl(imageRegex.cap().remove("src=").remove('"'));
     }
