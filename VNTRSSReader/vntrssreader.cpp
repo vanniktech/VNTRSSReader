@@ -99,7 +99,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
 
             prefix = xmlReader.prefix().toString();
 
-            if (prefix == "dc" || (prefix == "media" && name == "title")) continue;
+            if (prefix == "dc" || (prefix == "media" && name == "title") || (prefix == "atom10" && name == "link")) continue;
             if (atom && name == "summary") name = "description";
             if (atom && name == "published") name = "pubDate";
             if (atom && name == "id") name = "guid";
