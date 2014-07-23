@@ -100,10 +100,10 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
             prefix = xmlReader.prefix().toString();
 
             if (prefix == "dc" || (prefix == "media" && name == "title") || (prefix == "atom10" && name == "link")) continue;
-            if (atom && name == "summary") name = "description";
-            if (atom && name == "published") name = "pubDate";
-            if (atom && name == "id") name = "guid";
-            if (prefix == "media" && name == "thumbnail") name = "imageUrl";
+            else if (atom && name == "summary") name = "description";
+            else if (atom && name == "published") name = "pubDate";
+            else if (atom && name == "id") name = "guid";
+            else if (prefix == "media" && name == "thumbnail") name = "imageUrl";
 
             functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
             const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
