@@ -101,7 +101,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
 
             if (prefix == "dc" || (prefix == "media" && name == "title") || (prefix == "atom10" && name == "link")) continue;
             else if (atom && (name == "summary" || name == "subtitle")) name = "description";
-            else if (atom && name == "published") name = "pubDate";
+            else if (atom && (name == "published" || name == "updated")) name = "pubDate";
             else if (atom && name == "id") name = "guid";
             else if (prefix == "media" && name == "thumbnail") name = "imageUrl";
 
