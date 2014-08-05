@@ -64,7 +64,6 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     VNTRSSChannel* rssChannel = NULL;
     VNTRSSItem* rssItem = NULL;
 
-    QString functionName, prefix;
     QHash<QString, QString> functionValueHash;
     bool rss, atom;
 
@@ -97,7 +96,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
                 rssChannel->addItem(rssItem);
             }
 
-            prefix = xmlReader.prefix().toString();
+            QString prefix = xmlReader.prefix().toString();
 
             if (prefix == "dc" || (prefix == "media" && name == "title") || (prefix == "atom10" && name == "link")) continue;
             else if (atom && (name == "summary" || name == "subtitle")) name = "description";
@@ -105,7 +104,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
             else if (atom && name == "id") name = "guid";
             else if (prefix == "media" && name == "thumbnail") name = "imageUrl";
 
-            functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
+            QString functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
             const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
 
             if (rssChannel->metaObject()->indexOfMethod(functionNameWithParameter) != -1 || (rssItem != NULL && rssItem->metaObject()->indexOfMethod(functionNameWithParameter) != -1)) {
