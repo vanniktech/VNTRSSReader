@@ -65,7 +65,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     VNTRSSItem* rssItem = NULL;
 
     QHash<QString, QString> functionValueHash;
-    bool rss, atom;
+    bool rss, atom, channelImageTagPassed = false;
 
     for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError();) {
         xmlReader.readNext();
@@ -94,7 +94,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
             if ((name == "item" || name == "entry") && rssChannel != NULL) {
                 rssItem = new VNTRSSItem();
                 rssChannel->addItem(rssItem);
-            }
+            } else if (name == "image") channelImageTagPassed = true;
 
             QString prefix = xmlReader.prefix().toString();
 
@@ -103,6 +103,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
             else if (atom && (name == "published" || name == "updated")) name = "pubDate";
             else if (atom && name == "id") name = "guid";
             else if (prefix == "media" && name == "thumbnail") name = "imageUrl";
+            else if (channelImageTagPassed && name == "url") name = "imageUrl";
 
             QString functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
             const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
