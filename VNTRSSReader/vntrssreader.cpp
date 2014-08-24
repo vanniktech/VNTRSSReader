@@ -56,6 +56,8 @@ void VNTRSSReader::load(QList<QUrl> urls, bool loadImages) {
 }
 
 void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
+    bool networkError = networkReply->error();
+
     QXmlStreamReader xmlReader(networkReply->readAll());
     QString name;
 
@@ -67,7 +69,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     QHash<QString, QString> functionValueHash;
     bool rss, atom, channelImageTagPassed = false;
 
-    for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError();) {
+    for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError() && !networkError;) {
         xmlReader.readNext();
         name = xmlReader.name().toString();
 
@@ -136,6 +138,11 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
                 functionValueHash.clear();
             }
         }
+    }
+
+    if (networkError) {
+        rssChannel = new VNTRSSChannel();
+        rssChannel->setErrorMessage(networkReply->url().toString() + " - " + networkReply->errorString());
     }
 
     rssChannel->setRSSUrl(networkReply->url());
