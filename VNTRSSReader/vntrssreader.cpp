@@ -28,6 +28,8 @@ VNTRSSReader::VNTRSSReader(QObject *parent) : QObject(parent) {
 
     mNetworkAccessManagerImages = new QNetworkAccessManager(this);
     QObject::connect(mNetworkAccessManagerImages, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedImages(QNetworkReply*)));
+
+    mMissingChannels = 0;
 }
 
 VNTRSSReader::~VNTRSSReader() {
@@ -41,7 +43,7 @@ void VNTRSSReader::load(QUrl url) {
 
 void VNTRSSReader::load(QUrl url, bool loadImages) {
     mLoadImages = loadImages;
-    mMissingChannels = 1;
+    mMissingChannels++;
     mNetworkAccessManager->get(QNetworkRequest(url));
 }
 
@@ -51,17 +53,30 @@ void VNTRSSReader::load(QList<QUrl> urls) {
 
 void VNTRSSReader::load(QList<QUrl> urls, bool loadImages) {
     mLoadImages = loadImages;
-    mMissingChannels = urls.size();
-    foreach (QUrl url, urls) mNetworkAccessManager->get(QNetworkRequest(url));
+    mMissingChannels += urls.size();
+
+    foreach (QUrl url, urls) {
+        mNetworkAccessManager->get(QNetworkRequest(url));
+    }
 }
 
 void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
+    mMissingChannels--;
+
     bool networkError = networkReply->error();
+
+    if (!networkError) {
+        QUrl redirectUrl = networkReply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+
+        if (!redirectUrl.isEmpty()) {
+            this->load(redirectUrl, mLoadImages);
+            networkReply->deleteLater();
+            return;
+        }
+    }
 
     QXmlStreamReader xmlReader(networkReply->readAll());
     QString name;
-
-    mMissingChannels -= 1;
 
     VNTRSSChannel* rssChannel = NULL;
     VNTRSSItem* rssItem = NULL;
@@ -121,17 +136,15 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
             }
         } else if (xmlReader.isEndElement()) {
             if (rssChannel != NULL && rssItem == NULL) {
-                QHashIterator<QString, QString> it(functionValueHash);
-                while (it.hasNext()) {
-                    it.next();
+                QHash<QString, QString>::iterator it;
+                for (it = functionValueHash.begin(); it != functionValueHash.end(); ++it) {
                     QMetaObject::invokeMethod(rssChannel, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
                 }
 
                 functionValueHash.clear();
             } else if (rssItem != NULL) {
-                QHashIterator<QString, QString> it(functionValueHash);
-                while (it.hasNext()) {
-                    it.next();
+                QHash<QString, QString>::iterator it;
+                for (it = functionValueHash.begin(); it != functionValueHash.end(); ++it) {
                     QMetaObject::invokeMethod(rssItem, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
                 }
 
@@ -146,31 +159,39 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     }
 
     rssChannel->setRSSUrl(networkReply->url());
-    foreach (VNTRSSItem* item, rssChannel->getItems()) this->loadImage(item);
+
+    foreach (VNTRSSItem* item, rssChannel->getItems()) {
+        this->loadImage(item);
+    }
+
     mRSSChannels.append(rssChannel);
     this->loadImage(rssChannel);
 
     this->fireEmitIfDone();
 
-    delete networkReply;
+    networkReply->deleteLater();
 }
 
 void VNTRSSReader::replyFinishedImages(QNetworkReply* networkReply) {
     QList<VNTRSSCommon*> commons = mUrlItemMultiMap.values(networkReply->url());
     QImage image = QImageReader(networkReply).read();
 
-    foreach (VNTRSSCommon* common, commons) common->setImage(image);
+    foreach (VNTRSSCommon* common, commons) {
+        common->setImage(image);
+    }
 
     mUrlItemMultiMap.remove(networkReply->url());
 
     this->fireEmitIfDone();
 
-    delete networkReply;
+    networkReply->deleteLater();
 }
 
 void VNTRSSReader::loadImage(VNTRSSCommon* common) {
     if (mLoadImages && !common->getImageUrl().isEmpty()) {
-        if (mUrlItemMultiMap.values(common->getImageUrl()).size() == 0) mNetworkAccessManagerImages->get(QNetworkRequest(common->getImageUrl()));
+        if (mUrlItemMultiMap.values(common->getImageUrl()).size() == 0)
+            mNetworkAccessManagerImages->get(QNetworkRequest(common->getImageUrl()));
+
         mUrlItemMultiMap.insert(common->getImageUrl(), common);
     }
 }

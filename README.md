@@ -7,6 +7,7 @@ If you have any ideas on how to improve the library or its code, simply write an
 ## Features
 - RSS v0.91, v1.0 and v2.0 are supported
 - ATOM v1.0 is supported
+- supports redirect urls
 - nearly every attribute of the channel and entry / item object's are available through the library
 - pubDate will be parsed conveniently into QDateTime
 - option to automatically download the images and provide them for the library user
@@ -15,7 +16,7 @@ If you have any ideas on how to improve the library or its code, simply write an
 - let me know if you have any
 
 ## Sample Code
-There is also an example project in this Git repository, where you can take a look at the library itself. Please read the INSTALL document if you want to execute / test the Example project.
+There is also an example project in this Git repository, where you can take a look at the library itself. Please read the INSTALL document if you want to execute / test the example project.
 
 **Class.h**
 ```

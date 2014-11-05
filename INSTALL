@@ -21,6 +21,6 @@
 First open VNTRSSReader and generate the library in release mode.
 
 Afterwards open the Example.pro file and set up the library. The includepath is already given.
-In main.cpp change the url to a valid RSS v2 service of your choice and build the project in release mode.
+In main.cpp change the url to a valid RSS (v0.91, v1.0, v2.0 or ATOM v1.0) service of your choice and build the project in release mode.
 
-Now you can open your terminal and execute the Example console application. It should print you all entries of your RSS v2 service out.
+Now you can open your terminal and execute the Example console application. It should print you all entries of your RSS service out.

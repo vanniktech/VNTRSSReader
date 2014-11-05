@@ -25,7 +25,7 @@
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    QUrl url = QUrl("your_url_to_a_valid_rss_v2_service");
+    QUrl url = QUrl("your_url_to_a_valid_rss_service");
 
     // Proxy configuration
     // Use this if you don't want to use a proxy
