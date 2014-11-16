@@ -26,6 +26,7 @@
 
 #include <QUrl>
 #include <QList>
+#include <QLinkedList>
 
 #include "vntrsschannel.h"
 
@@ -46,17 +47,21 @@ private slots:
     void replyFinishedImages(QNetworkReply* networkReply);
 
 private:
+    void redirect(QUrl url);
     void fireEmitIfDone();
     void loadImage(VNTRSSCommon* common);
 
     QMultiMap<QUrl, VNTRSSCommon*> mUrlItemMultiMap;
     QList<VNTRSSChannel*> mRSSChannels;
+    QList<QLinkedList<QUrl>* > mRedirectUrls;
+
     bool mLoadImages;
     int mMissingChannels;
 
     QNetworkAccessManager* mNetworkAccessManager;
     QNetworkAccessManager* mNetworkAccessManagerImages;
 
+    void addInitialInputRSSUrlToRedirects(QUrl url);
 signals:
     void loadedRSS(QList<VNTRSSChannel*> rssChannels);
 };
