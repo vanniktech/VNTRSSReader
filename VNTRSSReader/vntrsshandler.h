@@ -17,29 +17,28 @@
     along with VNTRSSReader. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RSS_H
-#define RSS_H
+#ifndef VNTRSSHANDLER_H
+#define VNTRSSHANDLER_H
 
-#include <QObject>
+#include "vntprotocolhandler.h"
 
-#include <vntrssreader.h>
-#include <vntrsschannel.h>
-
-class RSS : public QObject {
-    Q_OBJECT
+class VNTRSSHandler : public VNTProtocolHandler
+{
 public:
-    explicit RSS(QObject *parent = 0);
-    ~RSS();
+    VNTRSSHandler();
+    ~VNTRSSHandler();
 
-    void load(QUrl url);
-    void loadRSS(QList<QUrl> urls);
+    const QString getItemName() const;
 
-public slots:
-    void loadedRSS(QList<VNTRSSChannel*> rssChannels);
+protected:
+    const QMap<QString, QString> getRSSChannelMapping() const;
+    const QMap<QString, QString> getRSSItemMapping() const;
 
-private:
-    VNTRSSReader* mRSSReader;
+    const QList<VNTProtocolSpecialCase> getRSSChannelSpecialCases() const;
+    const QList<VNTProtocolSpecialCase> getRSSItemSpecialCases() const;
 
+    const QList<QStack<QString> > getRSSChannelIgnoredTags() const;
+    const QList<QStack<QString> > getRSSItemIgnoredTags() const;
 };
 
-#endif // RSS_H
+#endif // VNTRSSHANDLER_H

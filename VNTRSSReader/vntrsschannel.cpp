@@ -27,7 +27,7 @@ VNTRSSChannel::~VNTRSSChannel() {
     qDeleteAll(mItems.begin(), mItems.end());
 }
 
-void VNTRSSChannel::setLanguage(QString language) {
+void VNTRSSChannel::setLanguage(const QString &language) {
     mLanguage = language.simplified();
  }
 
@@ -35,7 +35,7 @@ QString VNTRSSChannel::getLanguage() const {
     return mLanguage;
 }
 
-void VNTRSSChannel::setCopyright(QString copyright) {
+void VNTRSSChannel::setCopyright(const QString &copyright) {
     mCopyright = copyright.simplified();
 }
 
@@ -43,15 +43,15 @@ QString VNTRSSChannel::getCopyright() const {
     return mCopyright;
 }
 
-void VNTRSSChannel::setRSSUrl(QUrl rssUrl) {
-    mRSSUrl = rssUrl;
+void VNTRSSChannel::setRSSSite(QUrl rssSite) {
+    mRSSSite = rssSite;
 }
 
-QUrl VNTRSSChannel::getRSSUrl() const {
-    return mRSSUrl;
+QUrl VNTRSSChannel::getRSSSite() const {
+    return mRSSSite;
 }
 
-void VNTRSSChannel::setErrorMessage(QString errorMessage) {
+void VNTRSSChannel::setErrorMessage(const QString &errorMessage) {
     mErrorMessage = errorMessage;
 }
 
@@ -67,10 +67,10 @@ void VNTRSSChannel::addItem(VNTRSSItem* item) {
     mItems.append(item);
 }
 
-QList<VNTRSSItem*> VNTRSSChannel::getItems() const {
+QList<VNTRSSItem*> VNTRSSChannel::getRSSItems() const {
     return mItems;
 }
 
 QString VNTRSSChannel::toString() const {
-    return VNTRSSCommon::toString().append(QString("\nlanguage=%1\ncopyright=%2\nrssurl=%3\nerrormessage=%4").arg(mLanguage, mCopyright, mRSSUrl.toString(), mErrorMessage));
+    return VNTRSSCommon::toString().append(QString("\nlanguage=%1\ncopyright=%2\nrssurl=%3\nerrormessage=%4").arg(mLanguage, mCopyright, mRSSSite.toString(), mErrorMessage));
 }

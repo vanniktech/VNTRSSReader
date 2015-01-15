@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <item>
+      <media:content medium="image" height="300" type="image/jpeg" width="400" url="">
+        <media:thumbnail url="" />
+        <media:title>Vanniktech</media:title>
+      </media:content>
+    </item>
+  </channel>
+</rss>

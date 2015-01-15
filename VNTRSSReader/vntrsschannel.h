@@ -34,28 +34,28 @@ public:
     VNTRSSChannel();
     ~VNTRSSChannel();
 
-    Q_INVOKABLE void setLanguage(QString language);
+    Q_INVOKABLE void setLanguage(const QString &language);
     QString getLanguage() const;
 
-    Q_INVOKABLE void setCopyright(QString copyright);
+    Q_INVOKABLE void setCopyright(const QString &copyright);
     QString getCopyright() const;
 
-    void setRSSUrl(QUrl rssUrl);
-    QUrl getRSSUrl() const;
+    void setRSSSite(QUrl rssSite);
+    QUrl getRSSSite() const;
 
-    void setErrorMessage(QString errorMessage);
+    void setErrorMessage(const QString &errorMessage);
     QString getErrorMessage() const;
     bool hasError() const;
 
     void addItem(VNTRSSItem* item);
-    QList<VNTRSSItem *> getItems() const;
+    QList<VNTRSSItem *> getRSSItems() const;
 
     QString toString() const;
 
 private:
     QString mLanguage;
     QString mCopyright;
-    QUrl    mRSSUrl;
+    QUrl    mRSSSite;
     QString mErrorMessage;
     QList<VNTRSSItem*> mItems;
 };

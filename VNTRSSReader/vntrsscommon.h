@@ -32,20 +32,21 @@ class VNTRSSCommon : public QObject {
 public:
     VNTRSSCommon();
 
-    Q_INVOKABLE void setTitle(QString title);
-    QString getTitle();
+    Q_INVOKABLE void setTitle(const QString &title);
+    QString getTitle() const;
+    QString getPlainTitle() const;
 
-    Q_INVOKABLE void setDescription(QString description);
+    Q_INVOKABLE void setDescription(const QString &description);
     QString getDescription() const;
-    QString getPlainDescription();
+    QString getPlainDescription() const;
 
-    Q_INVOKABLE void setPubDate(QString pubDate);
-    QDateTime getPubDate() const;
+    Q_INVOKABLE void setPubDate(const QString &pubDate);
+    QDateTime getDate() const;
 
-    Q_INVOKABLE void setLink(QString link);
+    Q_INVOKABLE void setLink(const QString &link);
     QUrl getLink() const;
 
-    Q_INVOKABLE void setImageUrl(QString imageUrl);
+    Q_INVOKABLE void setImageUrl(const QString &imageUrl);
     QUrl getImageUrl() const;
 
     QString getImageFileType() const;
@@ -56,7 +57,9 @@ public:
 
 protected:
     QString mTitle;
+    QString mPlainTitle;
     QString mDescription;
+    QString mPlainDescription;
     QDateTime mPubDate;
     QUrl    mLink;
     QUrl    mImageUrl;

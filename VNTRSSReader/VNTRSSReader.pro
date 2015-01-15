@@ -36,14 +36,21 @@ TEMPLATE = lib
 DEFINES += VNTRSSREADER_LIBRARY
 
 SOURCES += vntrssreader.cpp \
+    vntprotocolhandler.cpp\
     vntrssitem.cpp \
     vntrsschannel.cpp\
+    vntrsshandler.cpp\
+    vntatomhandler.cpp\
     vntrsscommon.cpp
 
 HEADERS += vntrssreader.h\
-        vntrssreader_global.h \
+    vntrssreader_global.h \
+    vntprotocolspecialcase.cpp\
+    vntprotocolhandler.h\
     vntrssitem.h \
     vntrsschannel.h\
+    vntrsshandler.h\
+    vntatomhandler.h\
     vntrsscommon.h
 
 unix:!symbian {

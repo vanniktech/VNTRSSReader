@@ -17,10 +17,12 @@
     along with VNTRSSReader. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QXmlStreamReader>
 #include <QImageReader>
 
 #include "vntrssreader.h"
+
+#include "vntrsshandler.h"
+#include "vntatomhandler.h"
 
 VNTRSSReader::VNTRSSReader(QObject *parent) : QObject(parent) {
     mNetworkAccessManager = new QNetworkAccessManager(this);
@@ -37,11 +39,11 @@ VNTRSSReader::~VNTRSSReader() {
     delete mNetworkAccessManagerImages;
 }
 
-void VNTRSSReader::load(QUrl url) {
+void VNTRSSReader::load(const QUrl &url) {
     this->load(url, true);
 }
 
-void VNTRSSReader::load(QUrl url, bool loadImages) {
+void VNTRSSReader::load(const QUrl &url, const bool &loadImages) {
     mLoadImages = loadImages;
     mMissingChannels++;
 
@@ -50,11 +52,11 @@ void VNTRSSReader::load(QUrl url, bool loadImages) {
     mNetworkAccessManager->get(QNetworkRequest(url));
 }
 
-void VNTRSSReader::load(QList<QUrl> urls) {
+void VNTRSSReader::load(const QList<QUrl> &urls) {
     this->load(urls, true);
 }
 
-void VNTRSSReader::load(QList<QUrl> urls, bool loadImages) {
+void VNTRSSReader::load(const QList<QUrl> &urls, const bool &loadImages) {
     mLoadImages = loadImages;
     mMissingChannels += urls.size();
 
@@ -85,90 +87,16 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         }
     }
 
-    QXmlStreamReader xmlReader(networkReply->readAll());
-    QString name;
-
-    VNTRSSChannel* rssChannel = NULL;
-    VNTRSSItem* rssItem = NULL;
-
-    QHash<QString, QString> functionValueHash;
-    bool rss, atom, channelImageTagPassed = false;
-
-    for (int i = 0; !xmlReader.atEnd() && !xmlReader.hasError() && !networkError;) {
-        xmlReader.readNext();
-        name = xmlReader.name().toString();
-
-        if (xmlReader.isStartDocument()) {
-            rssChannel = new VNTRSSChannel();
-
-            if (xmlReader.hasError()) {
-                rssChannel->setErrorMessage(tr("Could not retrieve a valid XML response from %1").arg(networkReplyUrl.toString()));
-                break;
-            }
-        }
-
-        if (xmlReader.isStartElement()) {
-            if (i++ == 0) { // Root Element
-                rss = name == "rss";
-                atom = name == "feed";
-
-                if (!(rss || atom)) {
-                    rssChannel->setErrorMessage(QString("%1 %2").arg(networkReplyUrl.toString(), tr("is not a valid RSS feed")));
-                    break;
-                }
-            }
-
-            if ((name == "item" || name == "entry") && rssChannel != NULL) {
-                rssItem = new VNTRSSItem();
-                rssChannel->addItem(rssItem);
-            } else if (name == "image") channelImageTagPassed = true;
-
-            QString prefix = xmlReader.prefix().toString();
-
-            if (prefix == "dc" || (prefix == "media" && name == "title") || (prefix == "atom10" && name == "link")) continue;
-            else if (atom && (name == "summary" || name == "subtitle")) name = "description";
-            else if (atom && (name == "published" || name == "updated")) name = "pubDate";
-            else if (atom && name == "id") name = "guid";
-            else if (prefix == "media" && name == "thumbnail") name = "imageUrl";
-            else if (channelImageTagPassed && name == "url") name = "imageUrl";
-
-            QString functionName = QString("set%1%2").arg(name.at(0).toUpper(), name.mid(1));
-            const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
-
-            if (rssChannel->metaObject()->indexOfMethod(functionNameWithParameter) != -1 || (rssItem != NULL && rssItem->metaObject()->indexOfMethod(functionNameWithParameter) != -1)) {
-                QString value;
-
-                if (name == "link" && atom) value = xmlReader.attributes().value("href").toString();
-                else if (prefix == "media" && name == "imageUrl") value = xmlReader.attributes().value("url").toString();
-                else value = xmlReader.readElementText();
-
-                functionValueHash.insert(functionName, value);
-            }
-        } else if (xmlReader.isEndElement()) {
-            if (rssChannel != NULL && rssItem == NULL) {
-                QHash<QString, QString>::iterator it;
-                for (it = functionValueHash.begin(); it != functionValueHash.end(); ++it) {
-                    QMetaObject::invokeMethod(rssChannel, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
-                }
-
-                functionValueHash.clear();
-            } else if (rssItem != NULL) {
-                QHash<QString, QString>::iterator it;
-                for (it = functionValueHash.begin(); it != functionValueHash.end(); ++it) {
-                    QMetaObject::invokeMethod(rssItem, it.key().toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, it.value()));
-                }
-
-                functionValueHash.clear();
-            }
-        }
-    }
+    VNTRSSChannel* rssChannel;
 
     if (networkError) {
         rssChannel = new VNTRSSChannel();
         rssChannel->setErrorMessage(networkReplyUrl.toString() + " - " + networkReply->errorString());
+    } else {
+        rssChannel = this->parseData(networkReplyUrl.toString(), networkReply->readAll());
     }
 
-    rssChannel->setRSSUrl(networkReplyUrl);
+    rssChannel->setRSSSite(networkReplyUrl);
 
     // Map the redirect urls back to the original one, if possible
     QList<QLinkedList<QUrl>* >::iterator it;
@@ -177,14 +105,14 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         QLinkedList<QUrl>* redirect = *it;
 
         if (redirect->first() == networkReplyUrl) {
-            rssChannel->setRSSUrl(redirect->last());
+            rssChannel->setRSSSite(redirect->last());
             mRedirectUrls.erase(it);
             delete redirect;
             break;
         }
     }
 
-    foreach (VNTRSSItem* item, rssChannel->getItems()) {
+    foreach (VNTRSSItem* item, rssChannel->getRSSItems()) {
         this->loadImage(item);
     }
 
@@ -194,6 +122,55 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     this->fireEmitIfDone();
 
     networkReply->deleteLater();
+}
+
+VNTRSSChannel* VNTRSSReader::parseData(const QString &origin, const QByteArray &data) const {
+    QXmlStreamReader xml(data);
+    VNTRSSChannel* rssChannel = new VNTRSSChannel();
+
+    while (!xml.atEnd() && !xml.hasError()) {
+        if (xml.isStartElement()) {
+            VNTProtocolHandler* rssHandler = NULL;
+            QString name = xml.name().toString();
+
+            if (name == "rss") {
+                rssHandler = new VNTRSSHandler();
+            } else if (name == "feed") {
+                rssHandler = new VNTAtomHandler();
+            } else {
+                rssChannel->setErrorMessage(tr("could_not_retrieve_a_valid_xml_response_from_%1").arg(origin));
+            }
+
+            if (rssHandler != NULL) {
+                rssChannel = rssHandler->parseRSSChannel(xml);
+
+                while (!xml.atEnd() && !xml.hasError()) {
+                    if (xml.isStartElement() && xml.name() == rssHandler->getItemName()) {
+                        rssChannel->addItem(rssHandler->parseRSSItem(xml));
+                    }
+
+                    if (!xml.atEnd()) {
+                        xml.readNext();
+                    }
+                }
+
+                delete rssHandler;
+            }
+        }
+
+        if (!xml.atEnd()) {
+            xml.readNext();
+        }
+    }
+
+    if (xml.hasError()) {
+        rssChannel->setErrorMessage(tr("invalid_xml_data_from_%1_error_message_%2").arg(origin, xml.errorString()));
+        return rssChannel;
+    }
+
+    xml.clear();
+
+    return rssChannel;
 }
 
 void VNTRSSReader::replyFinishedImages(QNetworkReply* networkReply) {
@@ -228,13 +205,13 @@ void VNTRSSReader::fireEmitIfDone() {
     }
 }
 
-void VNTRSSReader::addInitialInputRSSUrlToRedirects(QUrl url) {
+void VNTRSSReader::addInitialInputRSSUrlToRedirects(const QUrl &url) {
     QLinkedList<QUrl>* redirect = new QLinkedList<QUrl>();
     redirect->prepend(url);
     mRedirectUrls.append(redirect);
 }
 
-void VNTRSSReader::redirect(QUrl url) {
+void VNTRSSReader::redirect(const QUrl &url) {
     mMissingChannels += 1;
     mNetworkAccessManager->get(QNetworkRequest(url));
 }

@@ -30,12 +30,12 @@ class VNTRSSItem : public VNTRSSCommon {
 public:
     VNTRSSItem();
 
-    Q_INVOKABLE void setDescription(QString description);
+    Q_INVOKABLE void setDescription(const QString &description);
 
-    Q_INVOKABLE void setGuid(QString guid);
+    Q_INVOKABLE void setGuid(const QString &guid);
     QString getGuid() const;
 
-    Q_INVOKABLE void setCategory(QString category);
+    Q_INVOKABLE void setCategory(const QString &category);
     QString getCategory() const;
 
     QString toString() const;

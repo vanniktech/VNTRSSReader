@@ -26,46 +26,54 @@ VNTRSSCommon::VNTRSSCommon() : QObject(0) {
 
 }
 
-void VNTRSSCommon::setTitle(QString title) {
-    mTitle = title.simplified();
+void VNTRSSCommon::setTitle(const QString &title) {
+    mTitle = title;
+    mPlainTitle = QString(title).remove(QRegExp("<[^>]*>")).replace('\n', ' ').replace(QRegExp("([\\s])+"), "\\1").trimmed();
 }
 
-QString VNTRSSCommon::getTitle() {
+QString VNTRSSCommon::getTitle() const {
     return mTitle;
 }
 
-void VNTRSSCommon::setDescription(QString description) {
+QString VNTRSSCommon::getPlainTitle() const {
+    return mPlainTitle;
+}
+
+void VNTRSSCommon::setDescription(const QString &description) {
     mDescription = description;
+    mPlainDescription = QString(description).remove(QRegExp("<[^>]*>")).replace(QRegExp("([\\s])+"), "\\1").trimmed();
 }
 
 QString VNTRSSCommon::getDescription() const {
     return mDescription;
 }
 
-QString VNTRSSCommon::getPlainDescription() {
-    return mDescription.remove(QRegExp("<[^>]*>")).simplified();
+QString VNTRSSCommon::getPlainDescription() const {
+    return mPlainDescription;
 }
 
-void VNTRSSCommon::setPubDate(QString pubDate) {
+void VNTRSSCommon::setPubDate(const QString &pubDate) {
     QString pubDateFormatted = pubDate.simplified();
 
     // Atom
-    if (pubDateFormatted.contains(QRegExp("[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"))) mPubDate = QDateTime::fromString(pubDateFormatted.mid(0, 19), "yyyy-MM-ddTHH:mm:ss");
-    else { // RSS
+    if (pubDateFormatted.contains(QRegExp("[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"))) {
+        mPubDate = QDateTime::fromString(pubDateFormatted.mid(0, 19), "yyyy-MM-ddTHH:mm:ss");
+    } else { // RSS
         pubDateFormatted = pubDateFormatted.mid(5).mid(0, 20); // replace weekday (e.g.:Thu, ) and timezone (e.g.: +0200, GMT), which is at the end of the string
 
         // need to do this, because month have different abbreviations on different operating systems with different languages
         pubDateFormatted = pubDateFormatted.replace("Jan", "01"); pubDateFormatted = pubDateFormatted.replace("Feb", "02"); pubDateFormatted = pubDateFormatted.replace("Mar", "03"); pubDateFormatted = pubDateFormatted.replace("Apr", "04"); pubDateFormatted = pubDateFormatted.replace("May", "05"); pubDateFormatted = pubDateFormatted.replace("Jun", "06"); pubDateFormatted = pubDateFormatted.replace("Jul", "07"); pubDateFormatted = pubDateFormatted.replace("Aug", "08"); pubDateFormatted = pubDateFormatted.replace("Sep", "09"); pubDateFormatted = pubDateFormatted.replace("Oct", "10"); pubDateFormatted = pubDateFormatted.replace("Nov", "11"); pubDateFormatted = pubDateFormatted.replace("Dez", "12");
 
+        // TODO check MMM
         mPubDate = QDateTime::fromString(pubDateFormatted, "dd MM yyyy HH:mm:ss");
     }
 }
 
-QDateTime VNTRSSCommon::getPubDate() const {
+QDateTime VNTRSSCommon::getDate() const {
     return mPubDate;
 }
 
-void VNTRSSCommon::setLink(QString link) {
+void VNTRSSCommon::setLink(const QString &link) {
     mLink = QUrl(link);
 }
 
@@ -73,7 +81,7 @@ QUrl VNTRSSCommon::getLink() const {
     return mLink;
 }
 
-void VNTRSSCommon::setImageUrl(QString imageUrl) {
+void VNTRSSCommon::setImageUrl(const QString &imageUrl) {
     mImageUrl = QUrl::fromUserInput(imageUrl);
     this->updateImageFileType();
 }

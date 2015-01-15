@@ -25,17 +25,19 @@ VNTRSSItem::VNTRSSItem() : VNTRSSCommon() {
 
 }
 
-void VNTRSSItem::setDescription(QString description) {
+void VNTRSSItem::setDescription(const QString &description) {
     VNTRSSCommon::setDescription(description);
 
     if (mImageUrl.isEmpty()) {
         QRegExp imageRegex("src=\"?(http://|https://)(www)?[a-zA-Z0-9~\\+\\$\\=\\%\\^\\&\\!\\-\\#\\_\\?./]+(\\.jpg|\\.JPG|\\.png|\\.PNG|\\.jpeg|\\.JPEG)\"?");
 
-        if (imageRegex.indexIn(description) != -1) this->setImageUrl(imageRegex.cap().remove("src=").remove('"'));
+        if (imageRegex.indexIn(description) != -1) {
+            this->setImageUrl(imageRegex.cap().remove("src=").remove('"'));
+        }
     }
 }
 
-void VNTRSSItem::setGuid(QString guid) {
+void VNTRSSItem::setGuid(const QString &guid) {
     mGuid = guid.simplified();
 }
 
@@ -43,7 +45,7 @@ QString VNTRSSItem::getGuid() const {
     return mGuid;
 }
 
-void VNTRSSItem::setCategory(QString category) {
+void VNTRSSItem::setCategory(const QString &category) {
     mCategory = category.simplified();
 }
 

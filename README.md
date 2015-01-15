@@ -11,22 +11,24 @@ If you have any ideas on how to improve the library or its code, simply write an
 - nearly every attribute of the channel and entry / item object's are available through the library
 - pubDate will be parsed conveniently into QDateTime
 - option to automatically download the images and provide them for the library user
+- variety of unit tests
 
 ## Further plans
 - let me know if you have any
 
 ## Sample Code
-There is also an example project in this Git repository, where you can take a look at the library itself. Please read the INSTALL document if you want to execute / test the example project.
+If the things below are not enough information, you can have a look at the Unit Tests to get a deeper understanding.
 
 **Class.h**
-```
+```c++
 #include <QObject>
 
-#include <vntrssreader.h>
-#include <vntrsschannel.h>
+#include "vntrssreader.h"
+#include "vntrsschannel.h"
 
 class RSS : public QObject {
     Q_OBJECT
+
 public slots:
     void loadedRSS(QList<VNTRSSChannel*> rssChannels);
 
@@ -34,8 +36,8 @@ public:
     explicit Class(QObject *parent = 0);
     ~Class();
 
-    void loadRSS(QUrl url);
-    void loadRSS(QList<QUrl> urls);
+    void loadRSS(const QUrl &url);
+    void loadRSS(const QList<QUrl> &urls);
 
 private:
     VNTRSSReader* mRSSReader;
@@ -43,7 +45,7 @@ private:
 ```
 
 **Class.cpp**
-```
+```c++
 #include "class.h"
 
 #include <QDebug>
@@ -52,7 +54,6 @@ Class::Class(QObject *parent) : QObject(parent) {
     mRSSReader = new VNTRSSReader();
     QObject::connect(mRSSReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>)), this, SLOT(loadedRSS(QList<VNTRSSChannel*>)));
 
-    // Proxy configuration
     // Use this if you don't want to use a proxy
     QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
 
@@ -73,23 +74,33 @@ Class::~Class() {
     delete mRSSReader;
 }
 
-void Class::loadRSS(QUrl url) {
+void Class::loadRSS(const QUrl &url) {
     mRSSReader->load(url);  // will automatically download the images. pass false as a second argument if you don't want that
 }
 
-void Class::loadRSS(QList<QUrl> urls) {
+void Class::loadRSS(const QList<QUrl> &urls) {
     mRSSReader->load(urls); // will automatically download the images. pass false as a second argument if you don't want that
 }
 
 void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels) {
     foreach (VNTRSSChannel* rssChannel, rssChannels) {
         if (!rssChannel->hasError()) {
-            QList<VNTRSSItem*> items = rssChannel->getItems();
-            foreach (VNTRSSItem* item, items) qDebug() << item->toString();
-        } else qDebug() << rssChannel->getErrorMessage();
+            QList<VNTRSSItem*> items = rssChannel->getRSSItems();
+
+            foreach (VNTRSSItem* item, items) {
+                qDebug() << item->toString();
+            }
+        } else {
+            qDebug() << rssChannel->getErrorMessage();
+        }
 
         delete rssChannel;
     }
 }
 
 ```
+
+## License
+GPL v2
+
+For more information see the [LICENSE file](LICENSE).
