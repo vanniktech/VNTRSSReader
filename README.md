@@ -104,3 +104,5 @@ void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels) {
 GPL v2
 
 For more information see the [LICENSE file](LICENSE).
+
+Copyright 2014-2015 Vanniktech - Niklas Baudy
