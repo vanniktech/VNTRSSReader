@@ -1,6 +1,8 @@
 VNTRSSReader
 ============
 
+[![License](http://img.shields.io/:license-gpl2-blue.svg)](http://www.gnu.org/licenses/gpl-2.0.html)
+
 This is a C++ library built on top of Qt, which allows you to consume RSS feeds, licensed under the GPL v2 terms. It is used in the [SpeedReader application](https://github.com/vanniktech/SpeedReader).
 If you have any ideas on how to improve the library or its code, simply write an [email](mailto:niklas.baudy@vanniktech.de) to me or fork the library. If you have any problems or you have found any issues or bugs, feel free to report them.
 
