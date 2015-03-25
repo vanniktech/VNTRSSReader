@@ -229,6 +229,9 @@ private slots:
     void testVanniktechRSS();
     void testVanniktechRSSRedirect();
 
+    void testVanniktechLiveEN();
+    void testVanniktechLiveDE();
+
     void testInvalidFeed();
     void testInvalidXML();
     void testInvalidResonseEmpty();
@@ -1392,6 +1395,28 @@ void UnitTests::testVanniktechRSSRedirect() {
     QCOMPARE(rssItems.at(1)->getDate(), this->getSimpleDateFormatRSS("Sun, 23 Nov 2014 19:10:03 +0100"));
 }
 
+void UnitTests::testVanniktechLiveEN() {
+    VNTRSSChannel* rssChannel = this->getRSSChannel(QUrl("http://vanniktech.de/RSS/en"));
+
+    QCOMPARE(rssChannel->getRSSSite(), QUrl("http://vanniktech.de/RSS/en"));
+    QCOMPARE(rssChannel->getLink(), QUrl("www.vanniktech.de"));
+    QCOMPARE(rssChannel->getTitle(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getPlainDescription(), QString("Vanniktech"));
+}
+
+void UnitTests::testVanniktechLiveDE() {
+    VNTRSSChannel* rssChannel = this->getRSSChannel(QUrl("http://vanniktech.de/RSS/de"));
+
+    QCOMPARE(rssChannel->getRSSSite(), QUrl("http://vanniktech.de/RSS/de"));
+    QCOMPARE(rssChannel->getLink(), QUrl("www.vanniktech.de"));
+    QCOMPARE(rssChannel->getTitle(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
+    QCOMPARE(rssChannel->getPlainDescription(), QString("Vanniktech"));
+}
+
 void UnitTests::testInvalidFeed() {
     VNTRSSChannel* rssChannel = this->getRSSChannel("invalid-feed.xml");
     QCOMPARE(rssChannel->hasError(), true);
@@ -1425,7 +1450,7 @@ VNTRSSChannel* UnitTests::getRSSChannel(const QUrl &url) {
     QSignalSpy spy(rssReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>)));
     rssReader->load(url);
 
-    QTest::qWait(200);
+    QTest::qWait(300);
 
     return spy.takeFirst().at(0).value<QList<VNTRSSChannel*> >().at(0);
 }

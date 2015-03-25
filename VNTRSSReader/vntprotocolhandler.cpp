@@ -91,7 +91,7 @@ bool VNTProtocolHandler::shouldIgnoreXmlTag(const QString &xmlTag, QStack<QStrin
         if (xmlTag == ignoredTag.top()) {
             bool shouldBreak = false;
 
-            while (!ignoredTag.isEmpty() && !xmlTags.isEmpty()) {
+            while (ignoredTags.size() <= xmlTags.size() && !ignoredTag.isEmpty() && !xmlTags.isEmpty()) {
                 shouldBreak = ignoredTag.pop() == xmlTags.pop();
             }
 
