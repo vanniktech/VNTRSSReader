@@ -39,3 +39,5 @@ HEADERS += ../VNTRSSReader/vntrssreader.h\
     ../VNTRSSReader/vntrsshandler.h\
     ../VNTRSSReader/vntatomhandler.h\
     ../VNTRSSReader/vntrsscommon.h
+
+CONFIG += c++11

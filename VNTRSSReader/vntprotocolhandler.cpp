@@ -45,6 +45,8 @@ VNTRSSItem* VNTProtocolHandler::parseRSSItem(QXmlStreamReader& xml) {
 
     QStack<QString> xmlTags;
 
+    xml.readNextStartElement();
+
     while(!(xml.isEndElement() && xml.name() == this->getItemName()) && !xml.atEnd()) {
         this->readXml(xml, xmlTags, specialCases, ignoredTags);
     }

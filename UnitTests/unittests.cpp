@@ -1404,6 +1404,17 @@ void UnitTests::testVanniktechLiveEN() {
     QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getPlainDescription(), QString("Vanniktech"));
+
+    const QList<VNTRSSItem*> rssItems = rssChannel->getRSSItems();
+
+    QVERIFY(rssItems.size() > 0);
+
+    for (const VNTRSSItem* rssItem : rssItems) {
+        QVERIFY(!rssItem->getDescription().isEmpty());
+        QVERIFY(!rssItem->getTitle().isEmpty());
+        QVERIFY(rssItem->getLink().isValid());
+        QVERIFY(rssItem->getDate().isValid());
+    }
 }
 
 void UnitTests::testVanniktechLiveDE() {
@@ -1415,6 +1426,17 @@ void UnitTests::testVanniktechLiveDE() {
     QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getPlainDescription(), QString("Vanniktech"));
+
+    const QList<VNTRSSItem*> rssItems = rssChannel->getRSSItems();
+
+    QVERIFY(rssItems.size() > 0);
+
+    for (const VNTRSSItem* rssItem : rssItems) {
+        QVERIFY(!rssItem->getDescription().isEmpty());
+        QVERIFY(!rssItem->getTitle().isEmpty());
+        QVERIFY(rssItem->getLink().isValid());
+        QVERIFY(rssItem->getDate().isValid());
+    }
 }
 
 void UnitTests::testInvalidFeed() {
@@ -1450,7 +1472,7 @@ VNTRSSChannel* UnitTests::getRSSChannel(const QUrl &url) {
     QSignalSpy spy(rssReader, SIGNAL(loadedRSS(QList<VNTRSSChannel*>)));
     rssReader->load(url);
 
-    QTest::qWait(300);
+    QTest::qWait(500);
 
     return spy.takeFirst().at(0).value<QList<VNTRSSChannel*> >().at(0);
 }
