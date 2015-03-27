@@ -69,10 +69,10 @@ void VNTProtocolHandler::setObjectValues(QObject* object, const QMap<QString, QS
         const QString property = mapping.contains(key) ? mapping.value(key) : key;
 
         const QString functionName = QString ("set%1%2").arg(property.at(0).toUpper(), property.mid(1));
-        const char* functionNameWithParameter = functionName.mid(0).append("(QString)").toStdString().c_str();
+        const QString functionNameWithArgument = QString(functionName).append("(QString)");
 
         const QMetaObject* metaObject = object->metaObject();
-        const int functionIndex = metaObject->indexOfMethod(QMetaObject::normalizedSignature(functionNameWithParameter));
+        const int functionIndex = metaObject->indexOfMethod(QMetaObject::normalizedSignature(functionNameWithArgument.toStdString().c_str()));
 
         if (functionIndex >= 0) {
             QMetaObject::invokeMethod(object, functionName.toStdString().c_str(), Qt::DirectConnection, Q_ARG(QString, value));

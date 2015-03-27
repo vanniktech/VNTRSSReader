@@ -1458,7 +1458,12 @@ void UnitTests::testInvalidResonseEmpty() {
 }
 
 VNTRSSChannel* UnitTests::getRSSChannel(const QString &fileName) {
-    QFile file("../UnitTests/assets/" + fileName);
+    #ifdef Q_OS_MAC
+        QFile file("../../../../UnitTests/assets/" + fileName);
+    #else
+        QFile file("../UnitTests/assets/" + fileName);
+    #endif
+
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << QString("Could not find file ../UnitTests/assets/" + fileName);
     }
