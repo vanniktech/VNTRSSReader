@@ -1399,7 +1399,7 @@ void UnitTests::testVanniktechLiveEN() {
     VNTRSSChannel* rssChannel = this->getRSSChannel(QUrl("http://vanniktech.de/RSS/en"));
 
     QCOMPARE(rssChannel->getRSSSite(), QUrl("http://vanniktech.de/RSS/en"));
-    QCOMPARE(rssChannel->getLink(), QUrl("www.vanniktech.de"));
+    QCOMPARE(rssChannel->getLink(), QUrl("http://www.vanniktech.de"));
     QCOMPARE(rssChannel->getTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
@@ -1421,7 +1421,7 @@ void UnitTests::testVanniktechLiveDE() {
     VNTRSSChannel* rssChannel = this->getRSSChannel(QUrl("http://vanniktech.de/RSS/de"));
 
     QCOMPARE(rssChannel->getRSSSite(), QUrl("http://vanniktech.de/RSS/de"));
-    QCOMPARE(rssChannel->getLink(), QUrl("www.vanniktech.de"));
+    QCOMPARE(rssChannel->getLink(), QUrl("http://www.vanniktech.de"));
     QCOMPARE(rssChannel->getTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getPlainTitle(), QString("Vanniktech"));
     QCOMPARE(rssChannel->getDescription(), QString("Vanniktech"));
