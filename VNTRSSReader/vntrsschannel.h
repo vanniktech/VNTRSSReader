@@ -40,7 +40,7 @@ public:
     Q_INVOKABLE void setCopyright(const QString &copyright);
     QString getCopyright() const;
 
-    void setRSSSite(QUrl rssSite);
+    void setRSSSite(const QUrl &rssSite);
     QUrl getRSSSite() const;
 
     void setErrorMessage(const QString &errorMessage);

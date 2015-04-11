@@ -43,7 +43,7 @@ QString VNTRSSChannel::getCopyright() const {
     return mCopyright;
 }
 
-void VNTRSSChannel::setRSSSite(QUrl rssSite) {
+void VNTRSSChannel::setRSSSite(const QUrl &rssSite) {
     mRSSSite = rssSite;
 }
 

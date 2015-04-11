@@ -85,11 +85,11 @@ void Class::loadRSS(const QList<QUrl> &urls) {
 }
 
 void Class::loadedRSS(QList<VNTRSSChannel*> rssChannels) {
-    foreach (VNTRSSChannel* rssChannel, rssChannels) {
+    for (VNTRSSChannel* rssChannel : rssChannels) {
         if (!rssChannel->hasError()) {
             QList<VNTRSSItem*> items = rssChannel->getRSSItems();
 
-            foreach (VNTRSSItem* item, items) {
+            for (VNTRSSItem* item : items) {
                 qDebug() << item->toString();
             }
         } else {

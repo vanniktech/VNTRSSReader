@@ -21,12 +21,6 @@
 
 #include <QMap>
 
-VNTRSSHandler::VNTRSSHandler() {
-}
-
-VNTRSSHandler::~VNTRSSHandler() {
-}
-
 const QString VNTRSSHandler::getItemName() const {
     return "item";
 }

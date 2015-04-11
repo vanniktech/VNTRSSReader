@@ -51,11 +51,11 @@ private:
     QMap<QString, QString> mKeyValueMap;
 
     void readXml(QXmlStreamReader &xml, QStack<QString> &xmlTags, const QList<VNTProtocolSpecialCase> &specialCases, const QList<QStack<QString> > &ignoredTags);
-    void setObjectValues(QObject *object, const QMap<QString, QString> &mapping);
+    void setObjectValues(QObject *object, const QMap<QString, QString> &mapping) const;
     void handleSpecialCasesInKeyValueMap(const QList<VNTProtocolSpecialCase> &specialCases, const QXmlStreamAttributes &attributes, const QString &key);
-    void popXmlTagIfPossible(const QString &xmlTag, QStack<QString> &xmlTags, QXmlStreamReader &xml);
+    void popXmlTagIfPossible(const QString &xmlTag, QStack<QString> &xmlTags, const QXmlStreamReader &xml) const;
 
-    bool shouldIgnoreXmlTag(const QString &xmlTag, QStack<QString> xmlTags, const QList<QStack<QString> > ignoredTags);
+    bool shouldIgnoreXmlTag(const QString &xmlTag, QStack<QString> xmlTags, const QList<QStack<QString> > ignoredTags) const;
 };
 
 

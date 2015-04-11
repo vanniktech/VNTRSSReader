@@ -25,9 +25,6 @@
 class VNTRSSHandler : public VNTProtocolHandler
 {
 public:
-    VNTRSSHandler();
-    ~VNTRSSHandler();
-
     const QString getItemName() const;
 
 protected:

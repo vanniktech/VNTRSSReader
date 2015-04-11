@@ -19,12 +19,6 @@
 
 #include "vntatomhandler.h"
 
-VNTAtomHandler::VNTAtomHandler() {
-}
-
-VNTAtomHandler::~VNTAtomHandler() {
-}
-
 const QString VNTAtomHandler::getItemName() const {
     return "entry";
 }
@@ -69,8 +63,8 @@ const QList<QStack<QString> > VNTAtomHandler::getRSSItemIgnoredTags() const {
     return QList<QStack<QString> >();
 }
 
-VNTRSSChannel *VNTAtomHandler::parseRSSChannel(QXmlStreamReader& xml) {
-    QString language = xml.attributes().value("xml:lang").toString();
+VNTRSSChannel* VNTAtomHandler::parseRSSChannel(QXmlStreamReader& xml) {
+    const QString language = xml.attributes().value("xml:lang").toString();
 
     VNTRSSChannel* rssChannel = VNTProtocolHandler::parseRSSChannel(xml);
     rssChannel->setLanguage(language);

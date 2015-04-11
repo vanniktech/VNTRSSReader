@@ -57,7 +57,7 @@ VNTRSSItem* VNTProtocolHandler::parseRSSItem(QXmlStreamReader& xml) {
     return rssItem;
 }
 
-void VNTProtocolHandler::setObjectValues(QObject* object, const QMap<QString, QString> &mapping) {
+void VNTProtocolHandler::setObjectValues(QObject* object, const QMap<QString, QString> &mapping) const {
     QMapIterator<QString, QString> it(mKeyValueMap);
 
     while (it.hasNext()) {
@@ -81,15 +81,15 @@ void VNTProtocolHandler::setObjectValues(QObject* object, const QMap<QString, QS
 }
 
 void VNTProtocolHandler::handleSpecialCasesInKeyValueMap(const QList<VNTProtocolSpecialCase> &specialCases, const QXmlStreamAttributes &attributes, const QString &key) {
-    foreach (const VNTProtocolSpecialCase specialCase, specialCases) {
+    for (const VNTProtocolSpecialCase &specialCase : specialCases) {
         if (key == specialCase.tag && (specialCase.keyName.isEmpty() || attributes.value(specialCase.keyName) == specialCase.keyValue)) {
             mKeyValueMap.insert(specialCase.name, attributes.value(specialCase.valueName).toString());
         }
     }
 }
 
-bool VNTProtocolHandler::shouldIgnoreXmlTag(const QString &xmlTag, QStack<QString> xmlTags, const QList<QStack<QString> > ignoredTags) {
-    foreach (QStack<QString> ignoredTag, ignoredTags) {
+bool VNTProtocolHandler::shouldIgnoreXmlTag(const QString &xmlTag, QStack<QString> xmlTags, const QList<QStack<QString> > ignoredTags) const {
+    for (QStack<QString> ignoredTag : ignoredTags) {
         if (xmlTag == ignoredTag.top()) {
             bool shouldBreak = false;
 
@@ -134,7 +134,7 @@ void VNTProtocolHandler::readXml(QXmlStreamReader &xml, QStack<QString> &xmlTags
     xml.readNextStartElement();
 }
 
-void VNTProtocolHandler::popXmlTagIfPossible(const QString &xmlTag, QStack<QString> &xmlTags, QXmlStreamReader &xml) {
+void VNTProtocolHandler::popXmlTagIfPossible(const QString &xmlTag, QStack<QString> &xmlTags, const QXmlStreamReader &xml) const {
     if (xml.isEndElement() && !xmlTags.isEmpty() && xmlTags.top() == xmlTag) {
         xmlTags.pop();
     }

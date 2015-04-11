@@ -51,7 +51,7 @@ private slots:
 private:
     void redirect(const QUrl &url);
     void fireEmitIfDone();
-    void loadImage(VNTRSSCommon* common);
+    void loadImage(VNTRSSCommon *common);
 
     QMultiMap<QUrl, VNTRSSCommon*> mUrlItemMultiMap;
     QList<VNTRSSChannel*> mRSSChannels;

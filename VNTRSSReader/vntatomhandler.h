@@ -25,12 +25,9 @@
 class VNTAtomHandler : public VNTProtocolHandler
 {
 public:
-    VNTAtomHandler();
-    ~VNTAtomHandler();
-
     const QString getItemName() const;
 
-    VNTRSSChannel *parseRSSChannel(QXmlStreamReader& xml);
+    VNTRSSChannel* parseRSSChannel(QXmlStreamReader& xml);
 
 protected:
     const QMap<QString, QString> getRSSChannelMapping() const;

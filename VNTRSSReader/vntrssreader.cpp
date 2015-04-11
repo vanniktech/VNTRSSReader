@@ -60,13 +60,13 @@ void VNTRSSReader::load(const QList<QUrl> &urls, const bool &loadImages) {
     mLoadImages = loadImages;
     mMissingChannels += urls.size();
 
-    foreach (QUrl url, urls) {
+    for (const QUrl &url : urls) {
         this->addInitialInputRSSUrlToRedirects(url);
         mNetworkAccessManager->get(QNetworkRequest(url));
     }
 }
 
-void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
+void VNTRSSReader::replyFinished(QNetworkReply *networkReply) {
     mMissingChannels--;
 
     const bool networkError = networkReply->error();
@@ -76,7 +76,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         const QUrl redirectUrl = networkReply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
 
         if (!redirectUrl.isEmpty()) {
-            foreach (QLinkedList<QUrl>* redirect, mRedirectUrls) {
+            for (QLinkedList<QUrl> *redirect : mRedirectUrls) {
                 if (redirect->front() == networkReplyUrl) {
                     redirect->prepend(redirectUrl);
                     networkReply->deleteLater();
@@ -87,7 +87,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         }
     }
 
-    VNTRSSChannel* rssChannel;
+    VNTRSSChannel *rssChannel;
 
     if (networkError) {
         rssChannel = new VNTRSSChannel();
@@ -99,10 +99,10 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
     rssChannel->setRSSSite(networkReplyUrl);
 
     // Map the redirect urls back to the original one, if possible
-    QList<QLinkedList<QUrl>* >::iterator it;
+    QList<QLinkedList<QUrl> *>::iterator it;
 
     for (it = mRedirectUrls.begin(); it != mRedirectUrls.end(); ++it) {
-        QLinkedList<QUrl>* redirect = *it;
+        QLinkedList<QUrl> *redirect = *it;
 
         if (redirect->first() == networkReplyUrl) {
             rssChannel->setRSSSite(redirect->last());
@@ -112,7 +112,7 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
         }
     }
 
-    foreach (VNTRSSItem* item, rssChannel->getRSSItems()) {
+    for (VNTRSSItem *item : rssChannel->getRSSItems()) {
         this->loadImage(item);
     }
 
@@ -126,11 +126,11 @@ void VNTRSSReader::replyFinished(QNetworkReply* networkReply) {
 
 VNTRSSChannel* VNTRSSReader::parseData(const QString &origin, const QByteArray &data) const {
     QXmlStreamReader xml(data);
-    VNTRSSChannel* rssChannel = new VNTRSSChannel();
+    VNTRSSChannel *rssChannel = new VNTRSSChannel();
 
     while (!xml.atEnd() && !xml.hasError()) {
         if (xml.isStartElement()) {
-            VNTProtocolHandler* rssHandler = NULL;
+            VNTProtocolHandler *rssHandler = NULL;
             QString name = xml.name().toString();
 
             if (name == "rss") {
@@ -173,11 +173,11 @@ VNTRSSChannel* VNTRSSReader::parseData(const QString &origin, const QByteArray &
     return rssChannel;
 }
 
-void VNTRSSReader::replyFinishedImages(QNetworkReply* networkReply) {
+void VNTRSSReader::replyFinishedImages(QNetworkReply *networkReply) {
     QList<VNTRSSCommon*> commons = mUrlItemMultiMap.values(networkReply->url());
     QImage image = QImageReader(networkReply).read();
 
-    foreach (VNTRSSCommon* common, commons) {
+    for (VNTRSSCommon *common : commons) {
         common->setImage(image);
     }
 
@@ -188,7 +188,7 @@ void VNTRSSReader::replyFinishedImages(QNetworkReply* networkReply) {
     networkReply->deleteLater();
 }
 
-void VNTRSSReader::loadImage(VNTRSSCommon* common) {
+void VNTRSSReader::loadImage(VNTRSSCommon *common) {
     if (mLoadImages && !common->getImageUrl().isEmpty()) {
         if (mUrlItemMultiMap.values(common->getImageUrl()).size() == 0) {
             mNetworkAccessManagerImages->get(QNetworkRequest(common->getImageUrl()));
@@ -206,7 +206,7 @@ void VNTRSSReader::fireEmitIfDone() {
 }
 
 void VNTRSSReader::addInitialInputRSSUrlToRedirects(const QUrl &url) {
-    QLinkedList<QUrl>* redirect = new QLinkedList<QUrl>();
+    QLinkedList<QUrl> *redirect = new QLinkedList<QUrl>();
     redirect->prepend(url);
     mRedirectUrls.append(redirect);
 }
