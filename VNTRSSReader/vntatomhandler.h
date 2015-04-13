@@ -25,19 +25,19 @@
 class VNTAtomHandler : public VNTProtocolHandler
 {
 public:
-    const QString getItemName() const;
+    const QString getItemName() const override;
 
     VNTRSSChannel* parseRSSChannel(QXmlStreamReader& xml);
 
 protected:
-    const QMap<QString, QString> getRSSChannelMapping() const;
-    const QMap<QString, QString> getRSSItemMapping() const;
+    const QMap<QString, QString> getRSSChannelMapping() const override;
+    const QMap<QString, QString> getRSSItemMapping() const override;
 
-    const QList<VNTProtocolSpecialCase> getRSSChannelSpecialCases() const;
-    const QList<VNTProtocolSpecialCase> getRSSItemSpecialCases() const;
+    const QList<VNTProtocolSpecialCase> getRSSChannelSpecialCases() const override;
+    const QList<VNTProtocolSpecialCase> getRSSItemSpecialCases() const override;
 
-    const QList<QStack<QString> > getRSSChannelIgnoredTags() const;
-    const QList<QStack<QString> > getRSSItemIgnoredTags() const;
+    const QList<QStack<QString> > getRSSChannelIgnoredTags() const override;
+    const QList<QStack<QString> > getRSSItemIgnoredTags() const override;
 };
 
 #endif // VNTATOMHANDLER_H
